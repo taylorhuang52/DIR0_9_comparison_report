@@ -111,6 +111,17 @@ section:last-of-type{border-bottom:none;}
 h2{font-size:22px;margin:0;font-weight:600;letter-spacing:-0.005em;}
 .sec-note{font-size:13px;color:var(--sub);margin:0 0 22px;max-width:680px;}
 .n-tag{font-size:12px;color:var(--sub);font-family:"IBM Plex Mono",Consolas,monospace;}
+.basis-tag{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11.5px; font-weight:500;
+  padding:3px 9px; border-radius:3px;
+  white-space:nowrap;
+}
+.basis-tag.pass-only{ background:rgba(24,138,92,0.14); color:#188A5C; border:1px solid rgba(24,138,92,0.35); }
+.basis-tag.all-bin{ background:rgba(217,123,46,0.16); color:#D97B2E; border:1px solid rgba(217,123,46,0.4); }
+.basis-tag .dot2{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.basis-tag.pass-only .dot2{background:#188A5C;}
+.basis-tag.all-bin .dot2{background:#D97B2E;}
 
 .panel{
   background:var(--panel);
@@ -208,6 +219,10 @@ noscript .ns-warn{background:var(--before-soft);border:1px solid var(--before);p
 
 <section id="methodology">
   <div class="sec-head"><h2>資料來源與方法</h2></div>
+  <p class="sec-note" style="margin-top:-4px;">
+    <span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span>　用於分佈、均值/標準差、差異、箱型圖與誤差統計等章節 &nbsp;·&nbsp;
+    <span class="basis-tag all-bin"><span class="dot2"></span>全部 Bin（含 Fail）</span>　僅用於「Fail Rate」章節的 Total 與 Bin#9 計數
+  </p>
   <div class="methodology">
     <div class="m-card"><div class="k">資料範圍</div><div class="v">每組 10 個 Lot，共取 Bin#=1（Pass）量測值進行統計</div></div>
     <div class="m-card"><div class="k">欄位定位</div><div class="v">DIR0(9) 於三組測試程式中皆位於同一資料欄位（第 9 項測試，單位 nA），已逐檔驗證一致</div></div>
@@ -216,13 +231,14 @@ noscript .ns-warn{background:var(--before-soft);border:1px solid var(--before);p
 </section>
 
 <section id="histogram">
-  <div class="sec-head"><h2>整體分佈：直方圖</h2><span class="n-tag" id="histN"></span></div>
+  <div class="sec-head"><h2>整體分佈：直方圖</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
+  <span class="n-tag" id="histN"></span>
   <p class="sec-note">各組量測值以 2 nA 為區間，統計佔各組總樣本數的百分比，方便在樣本數不同的情況下比較分佈形狀。滑鼠移到線上的點可看到數值。</p>
   <div class="panel"><div class="hist-svg-wrap" id="histSvgWrap"></div></div>
 </section>
 
 <section id="boxplot-overall">
-  <div class="sec-head"><h2>整體分佈：箱型圖</h2></div>
+  <div class="sec-head"><h2>整體分佈：箱型圖</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
   <p class="sec-note">箱體為 Q1–Q3（IQR），中線為中位數，菱形為平均值，鬚線延伸至 1.5×IQR 範圍內的最遠資料點；虛線標示測試上限 50 nA。</p>
   <div class="panel">
     <div class="box-overall-wrap">
@@ -233,7 +249,7 @@ noscript .ns-warn{background:var(--before-soft);border:1px solid var(--before);p
 </section>
 
 <section id="site-table">
-  <div class="sec-head"><h2>各 Site# 統計與差異</h2></div>
+  <div class="sec-head"><h2>各 Site# 統計與差異</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
   <p class="sec-note">Mean/Std 為各組於該 Site 的平均值與標準差；Diff 為後者減前者，括號內為變化百分比。<span style="color:var(--bad)">紅字</span>表示數值上升，<span style="color:var(--good)">綠字</span>表示數值下降。</p>
   <div class="panel table-scroll">
     <table id="siteTable"></table>
@@ -241,7 +257,7 @@ noscript .ns-warn{background:var(--before-soft);border:1px solid var(--before);p
 </section>
 
 <section id="fail-rate">
-  <div class="sec-head"><h2>DIR0(9) 不良 (Bin#9) 數量與 Fail Rate</h2></div>
+  <div class="sec-head"><h2>DIR0(9) 不良 (Bin#9) 數量與 Fail Rate</h2><span class="basis-tag all-bin"><span class="dot2"></span>全部 Bin（含 Fail）</span></div>
   <p class="sec-note">Bin#9 為量測值超出 DIR0(9) 規格上限（50 nA）所判定的不良 Bin，已逐筆驗證該 Bin 下的量測值皆 &gt; 50 nA。Total 為該組全部受測顆數（含 Pass 與各項 Fail），Fail Rate = Bin#9 顆數 / Total。</p>
   <div class="stat-strip" id="failStrip"></div>
   <div class="panel table-scroll" style="margin-top:16px;">
@@ -250,13 +266,13 @@ noscript .ns-warn{background:var(--before-soft);border:1px solid var(--before);p
 </section>
 
 <section id="boxplot-site">
-  <div class="sec-head"><h2>各 Site# 分佈：箱型圖</h2></div>
+  <div class="sec-head"><h2>各 Site# 分佈：箱型圖</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
   <p class="sec-note">每格為一個 Site，三個箱型由左至右依序為 Before／After／Gen2，縱軸統一為 0–50 nA（測試上限）。</p>
   <div class="site-grid" id="siteBoxGrid"></div>
 </section>
 
 <section id="error-stats">
-  <div class="sec-head"><h2>誤差值統計（跨 Site 差異分布）</h2></div>
+  <div class="sec-head"><h2>誤差值統計（跨 Site 差異分布）</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
   <p class="sec-note">以各 Site 平均值差異為樣本，計算三組比較（Before→After／After→Gen2／Before→Gen2）的誤差統計指標。</p>
   <div class="err-grid" id="errGrid"></div>
 </section>
