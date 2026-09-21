@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DIR0(9) 三方比較：Gen1 程式調整前 vs. Gen1 程式調整後 vs. Gen2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+TC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7F9;
+  --panel:#FFFFFF;
+  --ink:#161B22;
+  --sub:#5B6472;
+  --rule:#DCE0E6;
+  --before:#D97B2E;
+  --before-soft:#F6DCC1;
+  --after:#2E63E0;
+  --after-soft:#CBDAFB;
+  --gen2:#188A5C;
+  --gen2-soft:#C6EBDA;
+  --bad:#C4432B;
+  --good:#188A5C;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#12151B;
+    --panel:#181C24;
+    --ink:#EDEFF3;
+    --sub:#9AA3B2;
+    --rule:#2A2F3A;
+    --before-soft:#3A2C19;
+    --after-soft:#182B4D;
+    --gen2-soft:#123B2B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151B;
+  --panel:#181C24;
+  --ink:#EDEFF3;
+  --sub:#9AA3B2;
+  --rule:#2A2F3A;
+  --before-soft:#3A2C19;
+  --after-soft:#182B4D;
+  --gen2-soft:#123B2B;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans","IBM Plex Sans TC",-apple-system,"Segoe UI",sans-serif;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 40px);
+  line-height:1.55;
+}
+.mono{font-family:"IBM Plex Mono",Consolas,monospace;}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+header.hero{
+  border-bottom:1px solid var(--rule);
+  padding:56px 0 36px;
+}
+.kicker{
+  font-size:13px;
+  color:var(--sub);
+  letter-spacing:.02em;
+  margin:0 0 10px;
+}
+.kicker .mono{color:var(--sub);}
+h1{
+  font-size:clamp(28px,4vw,40px);
+  line-height:1.15;
+  margin:0 0 14px;
+  font-weight:700;
+  letter-spacing:-0.01em;
+}
+h1 .accent{color:var(--after);}
+.dek{
+  font-size:16px;
+  color:var(--sub);
+  max-width:640px;
+  margin:0 0 28px;
+}
+.legend-row{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--sub);}
+.legend-chip{display:inline-flex;align-items:center;gap:7px;}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block;}
+.dot.before{background:var(--before);}
+.dot.after{background:var(--after);}
+.dot.gen2{background:var(--gen2);}
+
+.stat-strip{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  margin:28px 0 0;
+}
+.stat-cell{background:var(--panel);padding:20px 22px;}
+.stat-cell .lbl{font-size:12.5px;color:var(--sub);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.stat-cell .val{font-size:30px;font-weight:600;font-family:"IBM Plex Mono",Consolas,monospace;letter-spacing:-0.01em;}
+.stat-cell .unit{font-size:14px;color:var(--sub);font-weight:400;margin-left:3px;}
+.stat-cell .sub{font-size:12.5px;color:var(--sub);margin-top:6px;}
+
+section{padding:44px 0;border-bottom:1px solid var(--rule);}
+section:last-of-type{border-bottom:none;}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:6px;flex-wrap:wrap;}
+h2{font-size:22px;margin:0;font-weight:600;letter-spacing:-0.005em;}
+.sec-note{font-size:13px;color:var(--sub);margin:0 0 22px;max-width:680px;}
+.n-tag{font-size:12px;color:var(--sub);font-family:"IBM Plex Mono",Consolas,monospace;}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--rule);
+  padding:22px;
+}
+.fallback-note{font-size:12px;color:var(--sub);padding:10px 0 0;}
+
+.methodology{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.methodology .m-card{
+  background:var(--panel);
+  border:1px solid var(--rule);
+  padding:16px 18px;
+}
+.methodology .m-card .k{font-size:12px;color:var(--sub);margin-bottom:6px;}
+.methodology .m-card .v{font-size:14.5px;font-weight:500;}
+
+svg{display:block;max-width:100%;height:auto;}
+.hist-svg-wrap{width:100%;}
+
+.box-overall-wrap{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;}
+.box-overall-svg{flex:0 0 auto;}
+.box-overall-legend{flex:1;min-width:220px;display:grid;gap:10px;font-size:13px;align-content:start;}
+.box-overall-legend .row{display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;}
+.box-overall-legend .sw{width:14px;height:14px;margin-top:2px;}
+.box-overall-legend .name{font-weight:600;}
+.box-overall-legend .figs{color:var(--sub);font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px;}
+
+.site-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+@media (max-width:760px){ .site-grid{grid-template-columns:repeat(2,1fr);} .methodology{grid-template-columns:1fr;} .stat-strip{grid-template-columns:1fr;} .err-grid{grid-template-columns:1fr;} }
+.site-panel{
+  background:var(--panel);
+  border:1px solid var(--rule);
+  padding:12px 12px 8px;
+}
+.site-panel .site-title{font-size:12.5px;font-weight:600;margin-bottom:2px;}
+.site-panel .site-sub{font-size:11px;color:var(--sub);margin-bottom:6px;font-family:"IBM Plex Mono",Consolas,monospace;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap;}
+th:first-child,td:first-child{text-align:left;}
+thead th{color:var(--sub);font-weight:500;font-size:12px;border-bottom:1px solid var(--ink);}
+tbody tr:hover{background:var(--bg);}
+td.mono, th.mono{font-family:"IBM Plex Mono",Consolas,monospace;}
+td.neg{color:var(--good);}
+td.pos{color:var(--bad);}
+.table-scroll{overflow-x:auto;}
+.group-head{font-size:11px;color:var(--sub);text-align:center !important;border-bottom:1px solid var(--rule);}
+
+.err-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.err-card{background:var(--panel);border:1px solid var(--rule);padding:18px 20px;}
+.err-card .title{font-size:13.5px;font-weight:600;margin-bottom:2px;}
+.err-card .title .arrow{color:var(--sub);font-weight:400;}
+.err-card .headline{font-size:26px;font-family:"IBM Plex Mono",Consolas,monospace;font-weight:600;margin:10px 0 4px;}
+.err-card .rows{margin-top:12px;display:grid;gap:6px;font-size:12.5px;}
+.err-card .rows div{display:flex;justify-content:space-between;color:var(--sub);}
+.err-card .rows span.v{color:var(--ink);font-family:"IBM Plex Mono",Consolas,monospace;}
+
+.findings{display:grid;gap:14px;}
+.finding{display:grid;grid-template-columns:28px 1fr;gap:12px;}
+.finding .num{font-family:"IBM Plex Mono",Consolas,monospace;font-size:13px;color:var(--sub);padding-top:2px;}
+.finding .txt{font-size:14.5px;}
+.finding .txt b{font-weight:600;}
+
+footer{padding:30px 0 10px;font-size:12px;color:var(--sub);}
+
+noscript .ns-warn{background:var(--before-soft);border:1px solid var(--before);padding:14px 18px;margin:20px 0;font-size:13.5px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<noscript><div class="ns-warn">此報告需要啟用 JavaScript 才能顯示圖表與表格內容，請在瀏覽器中開啟 JavaScript 後重新整理頁面。</div></noscript>
+
+<header class="hero">
+  <p class="kicker">LLD 測試資料分析報告　<span class="mono">DIR0(9) · nA</span></p>
+  <h1>DIR0(9) 三方比較：Gen1 程式調整前 vs. <span class="accent">Gen1 程式調整後</span> vs. Gen2</h1>
+  <p class="dek">比較 Gen1_1003 測試程式調整前 (Before) / 調整後 (After)，與 Gen2_2101 三組資料在 DIR0(9) 測項上的量測分佈、各 Site# 差異與誤差統計。統計基準為 Bin#=1（整體 Pass）之量測值。</p>
+  <div class="legend-row">
+    <span class="legend-chip"><span class="dot before"></span>Gen1_1003_before（調整前）</span>
+    <span class="legend-chip"><span class="dot after"></span>Gen1_1003_After（調整後）</span>
+    <span class="legend-chip"><span class="dot gen2"></span>Gen2_2101</span>
+  </div>
+
+  <div class="stat-strip" id="statStrip"></div>
+</header>
+
+<section id="methodology">
+  <div class="sec-head"><h2>資料來源與方法</h2></div>
+  <div class="methodology">
+    <div class="m-card"><div class="k">資料範圍</div><div class="v">每組 10 個 Lot，共取 Bin#=1（Pass）量測值進行統計</div></div>
+    <div class="m-card"><div class="k">欄位定位</div><div class="v">DIR0(9) 於三組測試程式中皆位於同一資料欄位（第 9 項測試，單位 nA），已逐檔驗證一致</div></div>
+    <div class="m-card"><div class="k">Site 定義</div><div class="v">8-Site 平行測試（Site# 0–7），各 Site 分別統計以檢視站別差異</div></div>
+  </div>
+</section>
+
+<section id="histogram">
+  <div class="sec-head"><h2>整體分佈：直方圖</h2><span class="n-tag" id="histN"></span></div>
+  <p class="sec-note">各組量測值以 2 nA 為區間，統計佔各組總樣本數的百分比，方便在樣本數不同的情況下比較分佈形狀。滑鼠移到線上的點可看到數值。</p>
+  <div class="panel"><div class="hist-svg-wrap" id="histSvgWrap"></div></div>
+</section>
+
+<section id="boxplot-overall">
+  <div class="sec-head"><h2>整體分佈：箱型圖</h2></div>
+  <p class="sec-note">箱體為 Q1–Q3（IQR），中線為中位數，菱形為平均值，鬚線延伸至 1.5×IQR 範圍內的最遠資料點；虛線標示測試上限 50 nA。</p>
+  <div class="panel">
+    <div class="box-overall-wrap">
+      <div class="box-overall-svg" id="overallBoxSvg"></div>
+      <div class="box-overall-legend" id="overallBoxLegend"></div>
+    </div>
+  </div>
+</section>
+
+<section id="site-table">
+  <div class="sec-head"><h2>各 Site# 統計與差異</h2></div>
+  <p class="sec-note">Mean/Std 為各組於該 Site 的平均值與標準差；Diff 為後者減前者，括號內為變化百分比。<span style="color:var(--bad)">紅字</span>表示數值上升，<span style="color:var(--good)">綠字</span>表示數值下降。</p>
+  <div class="panel table-scroll">
+    <table id="siteTable"></table>
+  </div>
+</section>
+
+<section id="fail-rate">
+  <div class="sec-head"><h2>DIR0(9) 不良 (Bin#9) 數量與 Fail Rate</h2></div>
+  <p class="sec-note">Bin#9 為量測值超出 DIR0(9) 規格上限（50 nA）所判定的不良 Bin，已逐筆驗證該 Bin 下的量測值皆 &gt; 50 nA。Total 為該組全部受測顆數（含 Pass 與各項 Fail），Fail Rate = Bin#9 顆數 / Total。</p>
+  <div class="stat-strip" id="failStrip"></div>
+  <div class="panel table-scroll" style="margin-top:16px;">
+    <table id="failTable"></table>
+  </div>
+</section>
+
+<section id="boxplot-site">
+  <div class="sec-head"><h2>各 Site# 分佈：箱型圖</h2></div>
+  <p class="sec-note">每格為一個 Site，三個箱型由左至右依序為 Before／After／Gen2，縱軸統一為 0–50 nA（測試上限）。</p>
+  <div class="site-grid" id="siteBoxGrid"></div>
+</section>
+
+<section id="error-stats">
+  <div class="sec-head"><h2>誤差值統計（跨 Site 差異分布）</h2></div>
+  <p class="sec-note">以各 Site 平均值差異為樣本，計算三組比較（Before→After／After→Gen2／Before→Gen2）的誤差統計指標。</p>
+  <div class="err-grid" id="errGrid"></div>
+</section>
+
+<section id="findings">
+  <div class="sec-head"><h2>重點結論</h2></div>
+  <div class="findings" id="findingsList"></div>
+</section>
+
+<footer>DIR0(9) 比較報告 · 資料來源：Gen1_1003_before / Gen1_1003_After / Gen2_2101 dlogTDO 原始測試紀錄 · 統計基準 Bin#=1 · 圖表以純 SVG 繪製，無外部相依套件</footer>
+</div>
+
+<script>
+"use strict";
+const DATA = {"bin_labels": ["0-2", "2-4", "4-6", "6-8", "8-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "40-42", "42-44", "44-46", "46-48", "48-50"], "hist_data": {"Gen1_1003_before": [0.0087, 2.8648, 13.253, 18.3579, 15.655, 12.7933, 9.1434, 6.901, 4.9477, 3.537, 2.6563, 1.8854, 1.4928, 1.1635, 0.9297, 0.7835, 0.6422, 0.5497, 0.4787, 0.4384, 0.3736, 0.3191, 0.3033, 0.2891, 0.233], "Gen1_1003_After": [0.2546, 0.5273, 2.5287, 7.6496, 9.9524, 9.9003, 8.8592, 8.43, 8.1754, 6.9273, 6.1982, 4.9743, 4.3782, 3.4383, 2.9526, 2.3852, 2.089, 1.6712, 1.6304, 1.3728, 1.2081, 1.1567, 1.1136, 1.1612, 1.0653], "Gen2_2101": [0.0, 0.2576, 6.7604, 23.7795, 30.0041, 21.1771, 9.9077, 4.0985, 1.5408, 0.7297, 0.4692, 0.3227, 0.218, 0.1684, 0.1189, 0.0948, 0.0835, 0.0481, 0.0425, 0.0425, 0.0326, 0.0304, 0.0198, 0.034, 0.0191]}, "overall_box": {"Gen1_1003_before": {"min": 1.653, "q1": 6.992, "median": 9.924, "q3": 14.76, "max": 49.95, "whisker_lo": 1.653, "whisker_hi": 26.412, "mean": 12.206, "std": 7.847, "n": 126605}, "Gen1_1003_After": {"min": 0.002, "q1": 10.779, "median": 16.442, "q3": 24.232, "max": 49.994, "whisker_lo": 0.002, "whisker_hi": 44.411, "mean": 18.825, "std": 10.402, "n": 132360}, "Gen2_2101": {"min": 2.723, "q1": 7.6, "median": 9.245, "q3": 11.192, "max": 49.936, "whisker_lo": 2.723, "whisker_hi": 16.565, "mean": 9.817, "std": 3.654, "n": 141294}}, "site_box": {"Gen1_1003_before": {"0": {"min": 1.653, "q1": 11.286, "median": 14.01, "q3": 17.902, "max": 49.91, "whisker_lo": 1.653, "whisker_hi": 27.825, "mean": 15.606, "std": 7.161, "n": 14613}, "1": {"min": 1.943, "q1": 5.635, "median": 6.995, "q3": 8.841, "max": 49.936, "whisker_lo": 1.943, "whisker_hi": 13.601, "mean": 8.515, "std": 6.231, "n": 16729}, "2": {"min": 2.136, "q1": 5.826, "median": 7.186, "q3": 9.128, "max": 49.912, "whisker_lo": 2.136, "whisker_hi": 14.08, "mean": 8.512, "std": 5.623, "n": 16738}, "3": {"min": 1.655, "q1": 5.061, "median": 6.424, "q3": 8.37, "max": 49.638, "whisker_lo": 1.655, "whisker_hi": 13.237, "mean": 7.905, "std": 5.797, "n": 15498}, "4": {"min": 1.953, "q1": 7.677, "median": 9.815, "q3": 12.828, "max": 49.95, "whisker_lo": 1.953, "whisker_hi": 20.505, "mean": 11.54, "std": 6.823, "n": 15526}, "5": {"min": 2.043, "q1": 14.792, "median": 18.782, "q3": 24.232, "max": 49.924, "whisker_lo": 2.043, "whisker_hi": 38.343, "mean": 20.375, "std": 8.287, "n": 15624}, "6": {"min": 1.948, "q1": 9.729, "median": 12.161, "q3": 15.761, "max": 49.909, "whisker_lo": 1.948, "whisker_hi": 24.808, "mean": 14.129, "std": 7.414, "n": 16508}, "7": {"min": 1.844, "q1": 7.973, "median": 10.209, "q3": 13.126, "max": 49.783, "whisker_lo": 1.844, "whisker_hi": 20.808, "mean": 11.649, "std": 6.329, "n": 15369}}, "Gen1_1003_After": {"0": {"min": 0.112, "q1": 18.68, "median": 22.766, "q3": 28.491, "max": 49.993, "whisker_lo": 3.974, "whisker_hi": 43.197, "mean": 24.219, "std": 8.335, "n": 15490}, "1": {"min": 0.71, "q1": 7.092, "median": 8.744, "q3": 11.367, "max": 49.936, "whisker_lo": 0.71, "whisker_hi": 17.779, "mean": 10.991, "std": 7.444, "n": 17216}, "2": {"min": 0.115, "q1": 9.322, "median": 11.458, "q3": 14.857, "max": 49.991, "whisker_lo": 1.05, "whisker_hi": 23.129, "mean": 13.713, "std": 7.796, "n": 17258}, "3": {"min": 0.043, "q1": 7.981, "median": 10.025, "q3": 12.945, "max": 49.973, "whisker_lo": 0.541, "whisker_hi": 20.385, "mean": 12.255, "std": 8.113, "n": 15758}, "4": {"min": 0.002, "q1": 15.162, "median": 18.754, "q3": 24.198, "max": 49.952, "whisker_lo": 1.654, "whisker_hi": 37.708, "mean": 21.142, "std": 9.022, "n": 16179}, "5": {"min": 0.043, "q1": 22.967, "median": 28.417, "q3": 35.284, "max": 49.979, "whisker_lo": 4.531, "whisker_hi": 49.979, "mean": 29.032, "std": 9.565, "n": 16909}, "6": {"min": 0.012, "q1": 15.177, "median": 18.777, "q3": 24.419, "max": 49.994, "whisker_lo": 1.35, "whisker_hi": 38.247, "mean": 21.096, "std": 9.182, "n": 17431}, "7": {"min": 0.052, "q1": 12.835, "median": 15.946, "q3": 20.613, "max": 49.978, "whisker_lo": 1.219, "whisker_hi": 32.229, "mean": 18.412, "std": 8.955, "n": 16119}}, "Gen2_2101": {"0": {"min": 2.723, "q1": 6.221, "median": 7.391, "q3": 8.849, "max": 49.521, "whisker_lo": 2.723, "whisker_hi": 12.745, "mean": 8.079, "std": 3.578, "n": 16790}, "1": {"min": 3.308, "q1": 7.978, "median": 9.535, "q3": 11.189, "max": 49.936, "whisker_lo": 3.308, "whisker_hi": 15.956, "mean": 9.908, "std": 3.154, "n": 18384}, "2": {"min": 2.92, "q1": 8.175, "median": 9.635, "q3": 11.386, "max": 49.731, "whisker_lo": 3.504, "whisker_hi": 16.155, "mean": 10.103, "std": 3.174, "n": 18263}, "3": {"min": 3.224, "q1": 7.327, "median": 8.597, "q3": 10.16, "max": 47.01, "whisker_lo": 3.224, "whisker_hi": 14.405, "mean": 8.965, "std": 2.746, "n": 16829}, "4": {"min": 3.028, "q1": 6.837, "median": 8.205, "q3": 9.865, "max": 48.881, "whisker_lo": 3.028, "whisker_hi": 14.383, "mean": 8.749, "std": 3.453, "n": 17185}, "5": {"min": 3.504, "q1": 8.856, "median": 10.608, "q3": 12.652, "max": 49.439, "whisker_lo": 3.504, "whisker_hi": 18.296, "mean": 11.335, "std": 4.301, "n": 18398}, "6": {"min": 3.508, "q1": 8.867, "median": 10.621, "q3": 12.759, "max": 49.791, "whisker_lo": 3.508, "whisker_hi": 18.582, "mean": 11.267, "std": 3.899, "n": 18345}, "7": {"min": 3.494, "q1": 7.862, "median": 9.412, "q3": 11.066, "max": 49.892, "whisker_lo": 3.494, "whisker_hi": 15.849, "mean": 9.847, "std": 3.321, "n": 17100}}}, "table_rows": [{"site": 0, "Gen1_1003_before_mean": 15.606, "Gen1_1003_before_std": 7.161, "Gen1_1003_before_n": 14613, "Gen1_1003_After_mean": 24.219, "Gen1_1003_After_std": 8.335, "Gen1_1003_After_n": 15490, "Gen2_2101_mean": 8.079, "Gen2_2101_std": 3.578, "Gen2_2101_n": 16790, "diff_before_after": 8.613, "diff_before_after_pct": 55.19, "diff_after_gen2": -16.14, "diff_after_gen2_pct": -66.64, "diff_before_gen2": -7.527, "diff_before_gen2_pct": -48.23}, {"site": 1, "Gen1_1003_before_mean": 8.515, "Gen1_1003_before_std": 6.231, "Gen1_1003_before_n": 16729, "Gen1_1003_After_mean": 10.991, "Gen1_1003_After_std": 7.444, "Gen1_1003_After_n": 17216, "Gen2_2101_mean": 9.908, "Gen2_2101_std": 3.154, "Gen2_2101_n": 18384, "diff_before_after": 2.476, "diff_before_after_pct": 29.08, "diff_after_gen2": -1.083, "diff_after_gen2_pct": -9.85, "diff_before_gen2": 1.393, "diff_before_gen2_pct": 16.36}, {"site": 2, "Gen1_1003_before_mean": 8.512, "Gen1_1003_before_std": 5.623, "Gen1_1003_before_n": 16738, "Gen1_1003_After_mean": 13.713, "Gen1_1003_After_std": 7.796, "Gen1_1003_After_n": 17258, "Gen2_2101_mean": 10.103, "Gen2_2101_std": 3.174, "Gen2_2101_n": 18263, "diff_before_after": 5.201, "diff_before_after_pct": 61.1, "diff_after_gen2": -3.61, "diff_after_gen2_pct": -26.33, "diff_before_gen2": 1.591, "diff_before_gen2_pct": 18.69}, {"site": 3, "Gen1_1003_before_mean": 7.905, "Gen1_1003_before_std": 5.797, "Gen1_1003_before_n": 15498, "Gen1_1003_After_mean": 12.255, "Gen1_1003_After_std": 8.113, "Gen1_1003_After_n": 15758, "Gen2_2101_mean": 8.965, "Gen2_2101_std": 2.747, "Gen2_2101_n": 16829, "diff_before_after": 4.35, "diff_before_after_pct": 55.03, "diff_after_gen2": -3.29, "diff_after_gen2_pct": -26.85, "diff_before_gen2": 1.06, "diff_before_gen2_pct": 13.41}, {"site": 4, "Gen1_1003_before_mean": 11.54, "Gen1_1003_before_std": 6.823, "Gen1_1003_before_n": 15526, "Gen1_1003_After_mean": 21.142, "Gen1_1003_After_std": 9.023, "Gen1_1003_After_n": 16179, "Gen2_2101_mean": 8.749, "Gen2_2101_std": 3.453, "Gen2_2101_n": 17185, "diff_before_after": 9.602, "diff_before_after_pct": 83.21, "diff_after_gen2": -12.393, "diff_after_gen2_pct": -58.62, "diff_before_gen2": -2.791, "diff_before_gen2_pct": -24.19}, {"site": 5, "Gen1_1003_before_mean": 20.375, "Gen1_1003_before_std": 8.287, "Gen1_1003_before_n": 15624, "Gen1_1003_After_mean": 29.032, "Gen1_1003_After_std": 9.566, "Gen1_1003_After_n": 16909, "Gen2_2101_mean": 11.335, "Gen2_2101_std": 4.301, "Gen2_2101_n": 18398, "diff_before_after": 8.657, "diff_before_after_pct": 42.49, "diff_after_gen2": -17.697, "diff_after_gen2_pct": -60.96, "diff_before_gen2": -9.04, "diff_before_gen2_pct": -44.37}, {"site": 6, "Gen1_1003_before_mean": 14.129, "Gen1_1003_before_std": 7.414, "Gen1_1003_before_n": 16508, "Gen1_1003_After_mean": 21.096, "Gen1_1003_After_std": 9.183, "Gen1_1003_After_n": 17431, "Gen2_2101_mean": 11.267, "Gen2_2101_std": 3.899, "Gen2_2101_n": 18345, "diff_before_after": 6.967, "diff_before_after_pct": 49.31, "diff_after_gen2": -9.829, "diff_after_gen2_pct": -46.59, "diff_before_gen2": -2.862, "diff_before_gen2_pct": -20.26}, {"site": 7, "Gen1_1003_before_mean": 11.649, "Gen1_1003_before_std": 6.329, "Gen1_1003_before_n": 15369, "Gen1_1003_After_mean": 18.412, "Gen1_1003_After_std": 8.956, "Gen1_1003_After_n": 16119, "Gen2_2101_mean": 9.847, "Gen2_2101_std": 3.321, "Gen2_2101_n": 17100, "diff_before_after": 6.763, "diff_before_after_pct": 58.06, "diff_after_gen2": -8.565, "diff_after_gen2_pct": -46.52, "diff_before_gen2": -1.802, "diff_before_gen2_pct": -15.47}], "error_stats": {"before_after": {"mean": 6.579, "std": 2.277, "mae": 6.579, "rmse": 6.962, "max_abs": 9.602, "max_site": 4, "min_abs": 2.476, "min_site": 1}, "after_gen2": {"mean": -9.076, "std": 5.737, "mae": 9.076, "rmse": 10.737, "max_abs": 17.697, "max_site": 5, "min_abs": 1.083, "min_site": 1}, "before_gen2": {"mean": -2.497, "std": 3.763, "mae": 3.508, "rmse": 4.517, "max_abs": 9.04, "max_site": 5, "min_abs": 1.06, "min_site": 3}}, "overall": {"n": {"Gen1_1003_before": 126605, "Gen1_1003_After": 132360, "Gen2_2101": 141294}, "mean": {"Gen1_1003_before": 12.206, "Gen1_1003_After": 18.825, "Gen2_2101": 9.817}, "std": {"Gen1_1003_before": 7.847, "Gen1_1003_After": 10.402, "Gen2_2101": 3.654}, "diff_before_after": 6.619, "diff_before_after_pct": 54.23, "diff_after_gen2": -9.008, "diff_after_gen2_pct": -47.85, "diff_before_gen2": -2.389, "diff_before_gen2_pct": -19.57}, "uniformity": {"Gen1_1003_before": 4.284, "Gen1_1003_After": 6.264, "Gen2_2101": 1.157}, "lot_counts": {"Gen1_1003_before": 10, "Gen1_1003_After": 10, "Gen2_2101": 10}, "overall_fail": {"Gen1_1003_before": {"total": 134482, "fail9": 7196, "fail_rate_pct": 5.3509}, "Gen1_1003_After": {"total": 133512, "fail9": 1145, "fail_rate_pct": 0.8576}, "Gen2_2101": {"total": 143890, "fail9": 1595, "fail_rate_pct": 1.1085}}, "site_fail_table": [{"site": 0, "Gen1_1003_before_total": 15878, "Gen1_1003_before_fail9": 1202, "Gen1_1003_before_rate": 7.5702, "Gen1_1003_After_total": 15753, "Gen1_1003_After_fail9": 263, "Gen1_1003_After_rate": 1.6695, "Gen2_2101_total": 17024, "Gen2_2101_fail9": 193, "Gen2_2101_rate": 1.1337}, {"site": 1, "Gen1_1003_before_total": 17364, "Gen1_1003_before_fail9": 567, "Gen1_1003_before_rate": 3.2654, "Gen1_1003_After_total": 17247, "Gen1_1003_After_fail9": 31, "Gen1_1003_After_rate": 0.1797, "Gen2_2101_total": 18613, "Gen2_2101_fail9": 182, "Gen2_2101_rate": 0.9778}, {"site": 2, "Gen1_1003_before_total": 17415, "Gen1_1003_before_fail9": 596, "Gen1_1003_before_rate": 3.4223, "Gen1_1003_After_total": 17274, "Gen1_1003_After_fail9": 16, "Gen1_1003_After_rate": 0.0926, "Gen2_2101_total": 18552, "Gen2_2101_fail9": 229, "Gen2_2101_rate": 1.2344}, {"site": 3, "Gen1_1003_before_total": 15904, "Gen1_1003_before_fail9": 342, "Gen1_1003_before_rate": 2.1504, "Gen1_1003_After_total": 15778, "Gen1_1003_After_fail9": 20, "Gen1_1003_After_rate": 0.1268, "Gen2_2101_total": 17006, "Gen2_2101_fail9": 140, "Gen2_2101_rate": 0.8232}, {"site": 4, "Gen1_1003_before_total": 16339, "Gen1_1003_before_fail9": 711, "Gen1_1003_before_rate": 4.3516, "Gen1_1003_After_total": 16258, "Gen1_1003_After_fail9": 79, "Gen1_1003_After_rate": 0.4859, "Gen2_2101_total": 17587, "Gen2_2101_fail9": 194, "Gen2_2101_rate": 1.1031}, {"site": 5, "Gen1_1003_before_total": 17597, "Gen1_1003_before_fail9": 1878, "Gen1_1003_before_rate": 10.6723, "Gen1_1003_After_total": 17492, "Gen1_1003_After_fail9": 581, "Gen1_1003_After_rate": 3.3215, "Gen2_2101_total": 18830, "Gen2_2101_fail9": 251, "Gen2_2101_rate": 1.333}, {"site": 6, "Gen1_1003_before_total": 17612, "Gen1_1003_before_fail9": 995, "Gen1_1003_before_rate": 5.6496, "Gen1_1003_After_total": 17483, "Gen1_1003_After_fail9": 51, "Gen1_1003_After_rate": 0.2917, "Gen2_2101_total": 18768, "Gen2_2101_fail9": 221, "Gen2_2101_rate": 1.1775}, {"site": 7, "Gen1_1003_before_total": 16373, "Gen1_1003_before_fail9": 905, "Gen1_1003_before_rate": 5.5274, "Gen1_1003_After_total": 16227, "Gen1_1003_After_fail9": 104, "Gen1_1003_After_rate": 0.6409, "Gen2_2101_total": 17510, "Gen2_2101_fail9": 185, "Gen2_2101_rate": 1.0565}]};
+const COLORS = {
+  Gen1_1003_before: {solid:"#D97B2E", soft:"rgba(217,123,46,0.16)", label:"Before"},
+  Gen1_1003_After:  {solid:"#2E63E0", soft:"rgba(46,99,224,0.14)", label:"After"},
+  Gen2_2101:        {solid:"#188A5C", soft:"rgba(24,138,92,0.14)", label:"Gen2"}
+};
+const GROUPS = ["Gen1_1003_before","Gen1_1003_After","Gen2_2101"];
+const fmt = (v,d=2)=> (v===undefined||v===null||isNaN(v)) ? "—" : Number(v).toFixed(d);
+const fmtPct = (v)=> (v>0? "+":"") + fmt(v,1) + "%";
+
+function safeRun(fn, fallbackId, label){
+  try{ fn(); }
+  catch(e){
+    console.error(label, e);
+    const el = document.getElementById(fallbackId);
+    if(el){ el.innerHTML = '<div class="fallback-note">此區塊渲染時發生問題（' + (e && e.message ? e.message : e) + '）。</div>'; }
+  }
+}
+
+/* ---------- Hero stat strip ---------- */
+safeRun(function(){
+  const strip = document.getElementById("statStrip");
+  const labels = {Gen1_1003_before:"調整前 (Before)", Gen1_1003_After:"調整後 (After)", Gen2_2101:"Gen2_2101"};
+  GROUPS.forEach(g=>{
+    const c = COLORS[g];
+    const cell = document.createElement("div");
+    cell.className = "stat-cell";
+    cell.style.borderTop = "3px solid " + c.solid;
+    cell.innerHTML =
+      '<div class="lbl"><span class="dot" style="background:'+c.solid+'"></span>'+labels[g]+'</div>' +
+      '<div class="val">'+fmt(DATA.overall.mean[g])+'<span class="unit">nA</span></div>' +
+      '<div class="sub">&sigma; = '+fmt(DATA.overall.std[g])+' nA　·　n = '+DATA.overall.n[g].toLocaleString()+'</div>';
+    strip.appendChild(cell);
+  });
+}, "statStrip", "hero-strip");
+
+/* ---------- Pure-SVG line/area chart for histogram ---------- */
+function drawLineChartSVG(opts){
+  const width = opts.width, height = opts.height;
+  const marginLeft = 42, marginRight = 14, marginTop = 16, marginBottom = 40;
+  const plotW = width - marginLeft - marginRight;
+  const plotH = height - marginTop - marginBottom;
+  const labels = opts.labels;
+  const n = labels.length;
+  const xStep = n>1 ? plotW/(n-1) : plotW;
+  const yMax = opts.yMax;
+  const xAt = i => marginLeft + xStep*i;
+  const yAt = v => marginTop + plotH - (v/yMax)*plotH;
+
+  let svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="'+height+'" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, Consolas, monospace">';
+
+  // gridlines + y labels
+  const ySteps = 5;
+  for(let i=0;i<=ySteps;i++){
+    const v = yMax*i/ySteps;
+    const y = yAt(v);
+    svg += '<line x1="'+marginLeft+'" y1="'+y+'" x2="'+(width-marginRight)+'" y2="'+y+'" stroke="#DCE0E6" stroke-width="1" />';
+    svg += '<text x="'+(marginLeft-8)+'" y="'+(y+3)+'" font-size="10" fill="#5B6472" text-anchor="end">'+v.toFixed(0)+'%</text>';
+  }
+  // x labels (every other bin to avoid crowding)
+  labels.forEach((lb,i)=>{
+    if(i % 2 === 0){
+      svg += '<text x="'+xAt(i)+'" y="'+(height-marginBottom+16)+'" font-size="9.5" fill="#5B6472" text-anchor="middle">'+lb+'</text>';
+    }
+  });
+  svg += '<text x="'+(marginLeft+plotW/2)+'" y="'+(height-6)+'" font-size="10.5" fill="#161B22" text-anchor="middle">DIR0(9) 區間 (nA)</text>';
+
+  opts.series.forEach(function(s){
+    const pts = s.values.map(function(v,i){ return [xAt(i), yAt(v)]; });
+    // area fill
+    let areaPath = 'M '+pts[0][0]+' '+yAt(0)+' ';
+    pts.forEach(function(p){ areaPath += 'L '+p[0]+' '+p[1]+' '; });
+    areaPath += 'L '+pts[pts.length-1][0]+' '+yAt(0)+' Z';
+    svg += '<path d="'+areaPath+'" fill="'+s.soft+'" stroke="none" />';
+    // line
+    let linePath = 'M '+pts.map(function(p){return p[0]+' '+p[1];}).join(' L ');
+    svg += '<path d="'+linePath+'" fill="none" stroke="'+s.solid+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" />';
+    // points w/ tooltip
+    pts.forEach(function(p,i){
+      svg += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="7" fill="transparent"><title>'+s.label+' · '+labels[i]+' nA: '+s.values[i].toFixed(2)+'%</title></circle>';
+      svg += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.2" fill="'+s.solid+'" />';
+    });
+  });
+
+  svg += '</svg>';
+  return svg;
+}
+
+safeRun(function(){
+  document.getElementById("histN").textContent =
+    "n(before)="+DATA.overall.n.Gen1_1003_before.toLocaleString()+" · n(after)="+DATA.overall.n.Gen1_1003_After.toLocaleString()+" · n(gen2)="+DATA.overall.n.Gen2_2101.toLocaleString();
+  let maxPct = 0;
+  GROUPS.forEach(g=>{ DATA.hist_data[g].forEach(v=>{ if(v>maxPct) maxPct=v; }); });
+  const yMax = Math.ceil((maxPct*1.15)/5)*5;
+  const series = GROUPS.map(g=>({ label: COLORS[g].label, solid: COLORS[g].solid, soft: COLORS[g].soft, values: DATA.hist_data[g] }));
+  const svg = drawLineChartSVG({ width: 960, height: 360, labels: DATA.bin_labels, series: series, yMax: yMax });
+  document.getElementById("histSvgWrap").innerHTML = svg;
+}, "histSvgWrap", "histogram");
+
+/* ---------- Box plot SVG helpers ---------- */
+function drawBoxSVG(cfg){
+  const width = cfg.width, height = cfg.height;
+  const marginLeft = cfg.marginLeft || 40, marginRight = cfg.marginRight || 10;
+  const marginTop = cfg.marginTop || 10, marginBottom = cfg.marginBottom || 26;
+  const plotW = width - marginLeft - marginRight;
+  const plotH = height - marginTop - marginBottom;
+  const yMax = cfg.yMax;
+  const yScale = v => marginTop + plotH - (v/yMax)*plotH;
+  const groups = cfg.groups;
+  const n = groups.length;
+  const slot = plotW/n;
+  const boxW = Math.min(34, slot*0.5);
+
+  let svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="'+height+'" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, Consolas, monospace">';
+
+  if(cfg.showAxis){
+    const steps = 5;
+    for(let i=0;i<=steps;i++){
+      const v = yMax*i/steps;
+      const y = yScale(v);
+      svg += '<line x1="'+marginLeft+'" y1="'+y+'" x2="'+(width-marginRight)+'" y2="'+y+'" stroke="#DCE0E6" stroke-width="1" />';
+      svg += '<text x="'+(marginLeft-6)+'" y="'+(y+3)+'" font-size="9.5" fill="#5B6472" text-anchor="end">'+Math.round(v)+'</text>';
+    }
+  }
+  svg += '<line x1="'+marginLeft+'" y1="'+yScale(yMax)+'" x2="'+(width-marginRight)+'" y2="'+yScale(yMax)+'" stroke="#5B6472" stroke-width="1" stroke-dasharray="3,3" />';
+
+  groups.forEach(function(gr,i){
+    const cx = marginLeft + slot*i + slot/2;
+    const c = COLORS[gr.key].solid;
+    const s = gr.stats;
+    if(!s){ return; }
+    svg += '<line x1="'+cx+'" y1="'+yScale(s.whisker_lo)+'" x2="'+cx+'" y2="'+yScale(s.whisker_hi)+'" stroke="'+c+'" stroke-width="1.4"/>';
+    svg += '<line x1="'+(cx-boxW*0.28)+'" y1="'+yScale(s.whisker_lo)+'" x2="'+(cx+boxW*0.28)+'" y2="'+yScale(s.whisker_lo)+'" stroke="'+c+'" stroke-width="1.4"/>';
+    svg += '<line x1="'+(cx-boxW*0.28)+'" y1="'+yScale(s.whisker_hi)+'" x2="'+(cx+boxW*0.28)+'" y2="'+yScale(s.whisker_hi)+'" stroke="'+c+'" stroke-width="1.4"/>';
+    const yTop = yScale(s.q3), yBot = yScale(s.q1);
+    svg += '<rect x="'+(cx-boxW/2)+'" y="'+yTop+'" width="'+boxW+'" height="'+Math.max(1,yBot-yTop)+'" fill="'+c+'" fill-opacity="0.22" stroke="'+c+'" stroke-width="1.6"><title>'+COLORS[gr.key].label+' · median '+s.median.toFixed(2)+' · Q1 '+s.q1.toFixed(2)+' · Q3 '+s.q3.toFixed(2)+'</title></rect>';
+    svg += '<line x1="'+(cx-boxW/2)+'" y1="'+yScale(s.median)+'" x2="'+(cx+boxW/2)+'" y2="'+yScale(s.median)+'" stroke="'+c+'" stroke-width="2.2"/>';
+    const my = yScale(s.mean);
+    svg += '<path d="M '+cx+' '+(my-4)+' L '+(cx+4)+' '+my+' L '+cx+' '+(my+4)+' L '+(cx-4)+' '+my+' Z" fill="#FFFFFF" stroke="'+c+'" stroke-width="1.4"><title>'+COLORS[gr.key].label+' mean '+s.mean.toFixed(2)+'</title></path>';
+  });
+
+  svg += '</svg>';
+  return svg;
+}
+
+/* Overall box plot */
+safeRun(function(){
+  const groups = GROUPS.map(g=>({key:g, stats: DATA.overall_box[g]}));
+  const svg = drawBoxSVG({width:340, height:300, groups:groups, yMax:50, showAxis:true});
+  document.getElementById("overallBoxSvg").innerHTML = svg;
+
+  const legend = document.getElementById("overallBoxLegend");
+  GROUPS.forEach(g=>{
+    const s = DATA.overall_box[g];
+    const c = COLORS[g];
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML =
+      '<span class="sw" style="background:'+c.solid+'"></span>' +
+      '<div><div class="name">'+c.label+'</div>' +
+      '<div class="figs">median '+fmt(s.median)+' · Q1–Q3 '+fmt(s.q1)+'–'+fmt(s.q3)+' · mean '+fmt(s.mean)+' · n '+s.n.toLocaleString()+'</div></div>';
+    legend.appendChild(row);
+  });
+}, "overallBoxSvg", "overall-box");
+
+/* Per-site box plots */
+safeRun(function(){
+  const grid = document.getElementById("siteBoxGrid");
+  for(let site=0; site<8; site++){
+    const groups = GROUPS.map(g=>({key:g, stats: DATA.site_box[g][site]}));
+    const svg = drawBoxSVG({width:230, height:190, marginLeft:30, marginBottom:18, groups:groups, yMax:50, showAxis:true});
+    const panel = document.createElement("div");
+    panel.className = "site-panel";
+    const meanA = DATA.site_box.Gen1_1003_After[site].mean;
+    const meanG2 = DATA.site_box.Gen2_2101[site].mean;
+    panel.innerHTML = '<div class="site-title">Site '+site+'</div><div class="site-sub">After '+fmt(meanA)+' &rarr; Gen2 '+fmt(meanG2)+' nA</div>'+svg;
+    grid.appendChild(panel);
+  }
+}, "siteBoxGrid", "site-box");
+
+/* ---------- Site comparison table ---------- */
+safeRun(function(){
+  const table = document.getElementById("siteTable");
+  let thead = '<thead>' +
+    '<tr>' +
+      '<th rowspan="2">Site#</th>' +
+      '<th colspan="2" class="group-head">Before</th>' +
+      '<th colspan="2" class="group-head">After</th>' +
+      '<th colspan="2" class="group-head">Gen2</th>' +
+      '<th colspan="1" class="group-head">Before&rarr;After</th>' +
+      '<th colspan="1" class="group-head">After&rarr;Gen2</th>' +
+      '<th colspan="1" class="group-head">Before&rarr;Gen2</th>' +
+    '</tr>' +
+    '<tr>' +
+      '<th class="mono">Mean</th><th class="mono">Std</th>' +
+      '<th class="mono">Mean</th><th class="mono">Std</th>' +
+      '<th class="mono">Mean</th><th class="mono">Std</th>' +
+      '<th class="mono">Diff (%)</th>' +
+      '<th class="mono">Diff (%)</th>' +
+      '<th class="mono">Diff (%)</th>' +
+    '</tr>' +
+  '</thead>';
+  let tbody = "<tbody>";
+  DATA.table_rows.forEach(function(r){
+    const cls = function(v){ return v>0 ? "pos" : (v<0 ? "neg" : ""); };
+    tbody += '<tr>' +
+      '<td>Site '+r.site+'</td>' +
+      '<td class="mono">'+fmt(r.Gen1_1003_before_mean)+'</td><td class="mono">'+fmt(r.Gen1_1003_before_std)+'</td>' +
+      '<td class="mono">'+fmt(r.Gen1_1003_After_mean)+'</td><td class="mono">'+fmt(r.Gen1_1003_After_std)+'</td>' +
+      '<td class="mono">'+fmt(r.Gen2_2101_mean)+'</td><td class="mono">'+fmt(r.Gen2_2101_std)+'</td>' +
+      '<td class="mono '+cls(r.diff_before_after)+'">'+fmt(r.diff_before_after)+' ('+fmtPct(r.diff_before_after_pct)+')</td>' +
+      '<td class="mono '+cls(r.diff_after_gen2)+'">'+fmt(r.diff_after_gen2)+' ('+fmtPct(r.diff_after_gen2_pct)+')</td>' +
+      '<td class="mono '+cls(r.diff_before_gen2)+'">'+fmt(r.diff_before_gen2)+' ('+fmtPct(r.diff_before_gen2_pct)+')</td>' +
+    '</tr>';
+  });
+  tbody += "</tbody>";
+  table.innerHTML = thead + tbody;
+}, "siteTable", "site-table");
+
+/* ---------- DIR0(9) Bin#9 fail strip + table ---------- */
+safeRun(function(){
+  const strip = document.getElementById("failStrip");
+  const labels = {Gen1_1003_before:"調整前 (Before)", Gen1_1003_After:"調整後 (After)", Gen2_2101:"Gen2_2101"};
+  GROUPS.forEach(g=>{
+    const c = COLORS[g];
+    const f = DATA.overall_fail[g];
+    const cell = document.createElement("div");
+    cell.className = "stat-cell";
+    cell.style.borderTop = "3px solid " + c.solid;
+    cell.innerHTML =
+      '<div class="lbl"><span class="dot" style="background:'+c.solid+'"></span>'+labels[g]+'</div>' +
+      '<div class="val">'+fmt(f.fail_rate_pct)+'<span class="unit">%</span></div>' +
+      '<div class="sub">Bin#9 顆數 '+f.fail9.toLocaleString()+' / Total '+f.total.toLocaleString()+'</div>';
+    strip.appendChild(cell);
+  });
+}, "failStrip", "fail-strip");
+
+safeRun(function(){
+  const table = document.getElementById("failTable");
+  let thead = '<thead>' +
+    '<tr>' +
+      '<th rowspan="2">Site#</th>' +
+      '<th colspan="3" class="group-head">Before</th>' +
+      '<th colspan="3" class="group-head">After</th>' +
+      '<th colspan="3" class="group-head">Gen2</th>' +
+    '</tr>' +
+    '<tr>' +
+      '<th class="mono">Total</th><th class="mono">Bin#9</th><th class="mono">Rate</th>' +
+      '<th class="mono">Total</th><th class="mono">Bin#9</th><th class="mono">Rate</th>' +
+      '<th class="mono">Total</th><th class="mono">Bin#9</th><th class="mono">Rate</th>' +
+    '</tr>' +
+  '</thead>';
+  let tbody = "<tbody>";
+  DATA.site_fail_table.forEach(function(r){
+    tbody += '<tr>' +
+      '<td>Site '+r.site+'</td>' +
+      '<td class="mono">'+r.Gen1_1003_before_total.toLocaleString()+'</td><td class="mono">'+r.Gen1_1003_before_fail9.toLocaleString()+'</td><td class="mono">'+fmt(r.Gen1_1003_before_rate)+'%</td>' +
+      '<td class="mono">'+r.Gen1_1003_After_total.toLocaleString()+'</td><td class="mono">'+r.Gen1_1003_After_fail9.toLocaleString()+'</td><td class="mono">'+fmt(r.Gen1_1003_After_rate)+'%</td>' +
+      '<td class="mono">'+r.Gen2_2101_total.toLocaleString()+'</td><td class="mono">'+r.Gen2_2101_fail9.toLocaleString()+'</td><td class="mono">'+fmt(r.Gen2_2101_rate)+'%</td>' +
+    '</tr>';
+  });
+  tbody += "</tbody>";
+  table.innerHTML = thead + tbody;
+}, "failTable", "fail-table");
+
+/* ---------- Error stats cards ---------- */
+safeRun(function(){
+  const grid = document.getElementById("errGrid");
+  const defs = [
+    {key:"before_after", title:"Before &rarr; After", note:"程式調整造成的變化"},
+    {key:"after_gen2", title:"After &rarr; Gen2", note:"世代間差異（調整後基準）"},
+    {key:"before_gen2", title:"Before &rarr; Gen2", note:"世代間差異（調整前基準）"}
+  ];
+  defs.forEach(function(d){
+    const s = DATA.error_stats[d.key];
+    const card = document.createElement("div");
+    card.className = "err-card";
+    card.innerHTML =
+      '<div class="title">'+d.title+'</div>' +
+      '<div style="font-size:12px;color:var(--sub)">'+d.note+'</div>' +
+      '<div class="headline">'+fmt(s.mean)+' nA</div>' +
+      '<div class="rows">' +
+        '<div>平均差異 (Mean Diff)<span class="v">'+fmt(s.mean)+'</span></div>' +
+        '<div>標準差 (Site-to-Site Std)<span class="v">'+fmt(s.std)+'</span></div>' +
+        '<div>MAE<span class="v">'+fmt(s.mae)+'</span></div>' +
+        '<div>RMSE<span class="v">'+fmt(s.rmse)+'</span></div>' +
+        '<div>最大絕對差異<span class="v">'+fmt(s.max_abs)+' (Site '+s.max_site+')</span></div>' +
+        '<div>最小絕對差異<span class="v">'+fmt(s.min_abs)+' (Site '+s.min_site+')</span></div>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}, "errGrid", "error-stats");
+
+/* ---------- Findings ---------- */
+safeRun(function(){
+  const o = DATA.overall;
+  const u = DATA.uniformity;
+  const list = document.getElementById("findingsList");
+  const items = [
+    "<b>程式調整後 DIR0(9) 不降反升</b>：Gen1_1003 調整前平均 "+fmt(o.mean.Gen1_1003_before)+" nA，調整後上升至 "+fmt(o.mean.Gen1_1003_After)+" nA（"+fmtPct(o.diff_before_after_pct)+"），且分佈往高值偏移（Q3 由 "+fmt(DATA.overall_box.Gen1_1003_before.q3)+" 升至 "+fmt(DATA.overall_box.Gen1_1003_After.q3)+" nA）；Before 資料下限普遍在 1.6–2 nA 以上，After 則可低至 "+fmt(DATA.overall_box.Gen1_1003_After.min,3)+" nA，顯示調整可能同時改變了量測底線／量測條件，而非單純製程改善。",
+    "<b>調整後 Fail Rate 大幅下降，與 Pass 群體均值上升是兩件事</b>：Before 的 DIR0(9) Bin#9 不良率高達 "+fmt(DATA.overall_fail.Gen1_1003_before.fail_rate_pct)+"%（"+DATA.overall_fail.Gen1_1003_before.fail9.toLocaleString()+" 顆），調整後降到僅 "+fmt(DATA.overall_fail.Gen1_1003_After.fail_rate_pct)+"%（"+DATA.overall_fail.Gen1_1003_After.fail9.toLocaleString()+" 顆），下降超過 5 個百分點；Gen2 則為 "+fmt(DATA.overall_fail.Gen2_2101.fail_rate_pct)+"%，介於兩者之間但更接近 After。也就是說，調整雖使 Pass 顆的平均值變高，卻同時大幅減少了因 DIR0(9) 超出 50 nA 上限而報廢的顆數，整體良率是提升的。",
+    "<b>Gen2_2101 是三者中表現最低、最集中的</b>：整體平均 "+fmt(o.mean.Gen2_2101)+" nA，較 After 低 "+fmt(Math.abs(o.diff_after_gen2))+" nA（"+fmtPct(o.diff_after_gen2_pct)+"），較 Before 亦低 "+fmt(Math.abs(o.diff_before_gen2))+" nA（"+fmtPct(o.diff_before_gen2_pct)+"）；標準差僅 "+fmt(o.std.Gen2_2101)+" nA，明顯小於 Before（"+fmt(o.std.Gen1_1003_before)+"）與 After（"+fmt(o.std.Gen1_1003_After)+"）。",
+    "<b>Site 間均勻度：Gen2 最佳，After 最差</b>：以各 Site 平均值的標準差衡量，Gen2 僅 "+fmt(u.Gen2_2101)+" nA，Before 為 "+fmt(u.Gen1_1003_before)+" nA，After 擴大到 "+fmt(u.Gen1_1003_After)+" nA——調整後不僅整體數值升高，Site 間差異也被放大。",
+    "<b>Site 5 在各項比較中都是差異最大的站別</b>：Before&rarr;After 上升 "+fmt(DATA.table_rows[5].diff_before_after)+" nA、After&rarr;Gen2 下降 "+fmt(Math.abs(DATA.table_rows[5].diff_after_gen2))+" nA，Before&rarr;Gen2 亦下降 "+fmt(Math.abs(DATA.table_rows[5].diff_before_gen2))+" nA；Fail Rate 上 Site 5 也是 Before 最高的站別（"+fmt(DATA.site_fail_table[5].Gen1_1003_before_rate)+"%），建議優先檢查該 Site 對應探針/負載板通道。",
+    "<b>Site 1 相對穩定</b>：三組比較中 Site 1 多次出現最小絕對差異（Before&rarr;After "+fmt(DATA.table_rows[1].diff_before_after)+" nA、After&rarr;Gen2 "+fmt(DATA.table_rows[1].diff_after_gen2)+" nA），可作為製程/測試條件參考基準站別。"
+  ];
+  items.forEach(function(t,i){
+    const row = document.createElement("div");
+    row.className = "finding";
+    row.innerHTML = '<div class="num">'+String(i+1).padStart(2,'0')+'</div><div class="txt">'+t+'</div>';
+    list.appendChild(row);
+  });
+}, "findingsList", "findings");
+</script>
+</body>
+</html>
