@@ -393,7 +393,8 @@ function drawBoxSVG(cfg){
   const plotW = width - marginLeft - marginRight;
   const plotH = height - marginTop - marginBottom;
   const yMax = cfg.yMax;
-  const yScale = v => marginTop + plotH - (v/yMax)*plotH;
+  const yMin = cfg.yMin || 0;
+  const yScale = v => marginTop + plotH - ((v-yMin)/(yMax-yMin))*plotH;
   const groups = cfg.groups;
   const n = groups.length;
   const slot = plotW/n;
@@ -404,11 +405,17 @@ function drawBoxSVG(cfg){
   if(cfg.showAxis){
     const steps = 5;
     for(let i=0;i<=steps;i++){
-      const v = yMax*i/steps;
+      const v = yMin + (yMax-yMin)*i/steps;
       const y = yScale(v);
       svg += '<line x1="'+marginLeft+'" y1="'+y+'" x2="'+(width-marginRight)+'" y2="'+y+'" stroke="#DCE0E6" stroke-width="1" />';
       svg += '<text x="'+(marginLeft-6)+'" y="'+(y+3)+'" font-size="9.5" fill="#5B6472" text-anchor="end">'+Math.round(v)+'</text>';
     }
+  }
+  if(cfg.specBand){
+    const yLo = yScale(cfg.specBand.lower), yHi = yScale(cfg.specBand.upper);
+    svg += '<rect x="'+marginLeft+'" y="'+yHi+'" width="'+plotW+'" height="'+Math.max(0,yLo-yHi)+'" fill="#188A5C" fill-opacity="0.07" />';
+    svg += '<line x1="'+marginLeft+'" y1="'+yLo+'" x2="'+(width-marginRight)+'" y2="'+yLo+'" stroke="#188A5C" stroke-width="1" stroke-dasharray="3,3" />';
+    svg += '<line x1="'+marginLeft+'" y1="'+yHi+'" x2="'+(width-marginRight)+'" y2="'+yHi+'" stroke="#188A5C" stroke-width="1" stroke-dasharray="3,3" />';
   }
   if(!cfg.hideGlobalLimit){
     svg += '<line x1="'+marginLeft+'" y1="'+yScale(yMax)+'" x2="'+(width-marginRight)+'" y2="'+yScale(yMax)+'" stroke="#5B6472" stroke-width="1" stroke-dasharray="3,3" />';
@@ -874,6 +881,278 @@ safeRun(function(){
 }, "ir0FindingsList", "ir0-findings");
 
 }catch(e){ console.error("IR0(8) section fatal error", e); }
+})();
+</script>
+
+
+<section id="part3-divider" style="padding-top:56px;padding-bottom:0;border-bottom:none;">
+  <p class="kicker" style="margin-top:0;">LLD 測試資料分析報告　<span class="mono">VF1 · mV</span></p>
+  <h2 style="font-size:28px;">VF1 三方比較：Gen1 程式調整前 vs. <span class="accent" style="color:var(--after);">Gen1 程式調整後</span> vs. Gen2</h2>
+  <p class="sec-note" style="max-width:680px;">承接前段分析，比較同三組資料在 <b>VF1</b>（正向壓降量測，單位 mV）上的量測分佈、各 Site# 差異與 Fail Rate。<b>注意：VF1 在測試程式中的測項編號因版本不同而不同</b>——Gen1_1003_After 全數為 VF1(14)；Gen1_1003_before 內同時存在 VF1(14) 與 VF1(17) 兩種版本（同一批資料混用了不同版本的測試程式）；Gen2_2101 全數為 VF1(17)。已依每個檔案各自的欄位與測項編號動態解析，確保取值與 Fail 判定正確。規格上下限三組一致，皆為 240–320 mV。統計基準同樣為 Bin#=1（整體 Pass）。</p>
+  <div class="stat-strip" id="vf1HeroStrip"></div>
+</section>
+
+<section id="vf1-histogram">
+  <div class="sec-head"><h2>整體分佈：直方圖</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
+  <span class="n-tag" id="vf1HistN"></span>
+  <p class="sec-note">各組量測值以 2 mV 為區間，統計佔各組總樣本數的百分比。</p>
+  <div class="panel"><div class="hist-svg-wrap" id="vf1HistSvgWrap"></div></div>
+</section>
+
+<section id="vf1-boxplot-overall">
+  <div class="sec-head"><h2>整體分佈：箱型圖</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
+  <p class="sec-note">綠色陰影帶為三組共通的規格範圍（240–320 mV）；菱形為平均值。</p>
+  <div class="panel">
+    <div class="box-overall-wrap">
+      <div class="box-overall-svg" id="vf1OverallBoxSvg"></div>
+      <div class="box-overall-legend" id="vf1OverallBoxLegend"></div>
+    </div>
+  </div>
+</section>
+
+<section id="vf1-site-table">
+  <div class="sec-head"><h2>各 Site# 統計與差異</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
+  <p class="sec-note">Mean/Std 為各組於該 Site 的平均值與標準差；Diff 為後者減前者，括號內為變化百分比。<span style="color:var(--bad)">紅字</span>表示數值上升，<span style="color:var(--good)">綠字</span>表示數值下降。</p>
+  <div class="panel table-scroll">
+    <table id="vf1SiteTable"></table>
+  </div>
+</section>
+
+<section id="vf1-fail-rate">
+  <div class="sec-head"><h2>VF1 不良數量與 Fail Rate</h2><span class="basis-tag all-bin"><span class="dot2"></span>全部 Bin（含 Fail）</span></div>
+  <p class="sec-note">不良判定：該筆記錄之 Bin# 等於該檔案對應的 VF1 測項編號（14 或 17，視版本而定），且已逐筆驗證量測值皆落在規格範圍（240–320 mV）之外。Total 為該組全部受測顆數，Fail Rate = 不良顆數 / Total。</p>
+  <div class="stat-strip" id="vf1FailStrip"></div>
+  <div class="panel table-scroll" style="margin-top:16px;">
+    <table id="vf1FailTable"></table>
+  </div>
+</section>
+
+<section id="vf1-boxplot-site">
+  <div class="sec-head"><h2>各 Site# 分佈：箱型圖</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
+  <p class="sec-note">每格為一個 Site，三個箱型由左至右依序為 Before／After／Gen2，縱軸統一為 230–330 mV；綠色虛線為共通規格範圍。</p>
+  <div class="site-grid" id="vf1SiteBoxGrid"></div>
+</section>
+
+<section id="vf1-error-stats">
+  <div class="sec-head"><h2>誤差值統計（跨 Site 差異分布）</h2><span class="basis-tag pass-only"><span class="dot2"></span>Bin#=1 Pass Only</span></div>
+  <p class="sec-note">以各 Site 平均值差異為樣本，計算三組比較的誤差統計指標。</p>
+  <div class="err-grid" id="vf1ErrGrid"></div>
+</section>
+
+<section id="vf1-findings">
+  <div class="sec-head"><h2>重點結論</h2></div>
+  <div class="findings" id="vf1FindingsList"></div>
+</section>
+
+<footer>DIR0(9) &amp; IR0(8) &amp; VF1 比較報告 · 資料來源：Gen1_1003_before / Gen1_1003_After / Gen2_2101 dlogTDO 原始測試紀錄 · 統計基準 Bin#=1（分佈類章節）／全部 Bin（Fail Rate 章節）· VF1 欄位位置與測項編號依各檔案動態解析 · 圖表以純 SVG 繪製，無外部相依套件</footer>
+
+<script>
+"use strict";
+(function(){
+try{
+
+const DATA3 = {"bin_labels": ["234-236", "236-238", "238-240", "240-242", "242-244", "244-246", "246-248", "248-250", "250-252", "252-254", "254-256", "256-258", "258-260", "260-262", "262-264", "264-266", "266-268", "268-270", "270-272", "272-274", "274-276", "276-278", "278-280", "280-282", "282-284", "284-286", "286-288", "288-290", "290-292", "292-294", "294-296", "296-298", "298-300", "300-302", "302-304", "304-306", "306-308", "308-310", "310-312", "312-314", "314-316", "316-318", "318-320", "320-322", "322-324", "324-326"], "hist_data": {"Gen1_1003_before": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0008, 0.0008, 0.0, 0.0, 0.0008, 0.0008, 0.0, 0.0016, 0.0032, 0.0221, 0.0924, 0.3317, 0.9707, 2.2282, 3.8379, 25.3229, 6.9334, 7.818, 7.9689, 7.8528, 7.2572, 6.4634, 5.4674, 4.7281, 3.7692, 2.7384, 2.086, 1.4494, 1.0079, 0.6967, 0.4455, 0.2654, 0.154, 0.0845, 0.0, 0.0, 0.0], "Gen1_1003_After": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0008, 0.0015, 0.0, 0.0008, 0.0015, 0.0, 0.0332, 0.2047, 0.5409, 0.9572, 1.1544, 1.2942, 2.2461, 4.2528, 7.1578, 9.1198, 10.3347, 11.2519, 11.3018, 10.1904, 8.727, 6.712, 4.9358, 3.557, 2.392, 1.5329, 0.9965, 0.5704, 0.2561, 0.1352, 0.0733, 0.0431, 0.0204, 0.0038, 0.0, 0.0, 0.0], "Gen2_2101": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0007, 0.0007, 0.0007, 0.0, 0.0007, 0.0021, 0.0, 0.0007, 0.0007, 0.0014, 0.0106, 0.0651, 0.2265, 0.6023, 1.2393, 2.5995, 4.4885, 6.4263, 8.3096, 10.0408, 10.8469, 10.9007, 10.0578, 8.8404, 6.851, 5.2394, 4.0002, 2.9421, 2.0716, 1.4042, 0.879, 0.5874, 0.4282, 0.2774, 0.2166, 0.1833, 0.1373, 0.1203, 0.0, 0.0, 0.0]}, "overall_box": {"Gen1_1003_before": {"min": 253.958, "q1": 282.928, "median": 288.615, "q3": 295.298, "max": 319.999, "whisker_lo": 267.571, "whisker_hi": 313.849, "mean": 290.086, "std": 7.939, "n": 126605}, "Gen1_1003_After": {"min": 253.439, "q1": 283.596, "median": 288.251, "q3": 293.068, "max": 318.895, "whisker_lo": 269.389, "whisker_hi": 307.272, "mean": 288.431, "std": 7.29, "n": 132360}, "Gen2_2101": {"min": 245.742, "q1": 282.209, "median": 286.926, "q3": 292.087, "max": 319.995, "whisker_lo": 267.446, "whisker_hi": 306.898, "mean": 287.558, "std": 7.72, "n": 141294}}, "site_box": {"Gen1_1003_before": {"0": {"min": 267.839, "q1": 282.921, "median": 288.648, "q3": 295.153, "max": 319.854, "whisker_lo": 267.839, "whisker_hi": 313.477, "mean": 289.913, "std": 7.567, "n": 14613}, "1": {"min": 263.204, "q1": 282.887, "median": 287.22, "q3": 294.334, "max": 317.51, "whisker_lo": 268.961, "whisker_hi": 311.427, "mean": 289.179, "std": 7.814, "n": 16729}, "2": {"min": 267.571, "q1": 282.907, "median": 288.2, "q3": 294.822, "max": 318.947, "whisker_lo": 267.571, "whisker_hi": 312.682, "mean": 289.676, "std": 7.894, "n": 16738}, "3": {"min": 255.152, "q1": 282.893, "median": 287.506, "q3": 293.296, "max": 319.501, "whisker_lo": 272.708, "whisker_hi": 308.882, "mean": 288.855, "std": 7.125, "n": 15498}, "4": {"min": 272.625, "q1": 282.954, "median": 289.707, "q3": 296.271, "max": 319.949, "whisker_lo": 272.625, "whisker_hi": 316.22, "mean": 290.904, "std": 8.189, "n": 15526}, "5": {"min": 271.284, "q1": 282.983, "median": 289.47, "q3": 296.549, "max": 319.879, "whisker_lo": 271.284, "whisker_hi": 316.737, "mean": 290.964, "std": 8.182, "n": 15624}, "6": {"min": 271.611, "q1": 282.989, "median": 290.128, "q3": 296.752, "max": 319.999, "whisker_lo": 271.611, "whisker_hi": 317.362, "mean": 291.3, "std": 8.48, "n": 16508}, "7": {"min": 253.958, "q1": 282.925, "median": 288.437, "q3": 294.985, "max": 319.724, "whisker_lo": 268.684, "whisker_hi": 313.058, "mean": 289.901, "std": 7.773, "n": 15369}}, "Gen1_1003_After": {"0": {"min": 265.644, "q1": 283.543, "median": 288.182, "q3": 292.538, "max": 314.983, "whisker_lo": 270.056, "whisker_hi": 305.939, "mean": 288.006, "std": 6.704, "n": 15490}, "1": {"min": 254.289, "q1": 282.493, "median": 287.225, "q3": 292.214, "max": 312.768, "whisker_lo": 267.949, "whisker_hi": 306.757, "mean": 287.401, "std": 7.274, "n": 17216}, "2": {"min": 253.439, "q1": 283.241, "median": 287.729, "q3": 292.882, "max": 315.017, "whisker_lo": 268.81, "whisker_hi": 307.319, "mean": 288.087, "std": 7.353, "n": 17258}, "3": {"min": 265.395, "q1": 282.693, "median": 286.728, "q3": 291.022, "max": 311.997, "whisker_lo": 270.215, "whisker_hi": 303.506, "mean": 286.771, "std": 6.589, "n": 15758}, "4": {"min": 265.983, "q1": 284.535, "median": 289.202, "q3": 294.019, "max": 315.116, "whisker_lo": 270.341, "whisker_hi": 308.15, "mean": 289.365, "std": 7.316, "n": 16179}, "5": {"min": 259.04, "q1": 284.276, "median": 289.201, "q3": 294.235, "max": 318.806, "whisker_lo": 269.36, "whisker_hi": 309.165, "mean": 289.437, "std": 7.497, "n": 16909}, "6": {"min": 264.762, "q1": 284.97, "median": 289.843, "q3": 294.769, "max": 318.895, "whisker_lo": 270.282, "whisker_hi": 309.391, "mean": 290.021, "std": 7.556, "n": 17431}, "7": {"min": 260.575, "q1": 283.469, "median": 287.864, "q3": 292.632, "max": 318.209, "whisker_lo": 269.733, "whisker_hi": 306.374, "mean": 288.216, "std": 7.282, "n": 16119}}, "Gen2_2101": {"0": {"min": 255.361, "q1": 282.685, "median": 287.42, "q3": 292.986, "max": 318.304, "whisker_lo": 267.478, "whisker_hi": 308.41, "mean": 288.072, "std": 7.56, "n": 16790}, "1": {"min": 264.864, "q1": 280.804, "median": 285.585, "q3": 290.614, "max": 319.694, "whisker_lo": 266.216, "whisker_hi": 305.316, "mean": 285.896, "std": 7.177, "n": 18384}, "2": {"min": 264.66, "q1": 281.972, "median": 286.847, "q3": 292.06, "max": 318.96, "whisker_lo": 266.927, "whisker_hi": 307.19, "mean": 287.35, "std": 7.639, "n": 18263}, "3": {"min": 253.245, "q1": 281.916, "median": 286.312, "q3": 290.864, "max": 318.649, "whisker_lo": 268.758, "whisker_hi": 304.249, "mean": 286.704, "std": 6.869, "n": 16829}, "4": {"min": 265.901, "q1": 282.985, "median": 287.692, "q3": 293.812, "max": 319.995, "whisker_lo": 266.956, "whisker_hi": 309.935, "mean": 288.846, "std": 8.474, "n": 17185}, "5": {"min": 248.23, "q1": 283.137, "median": 287.816, "q3": 292.829, "max": 319.893, "whisker_lo": 268.723, "whisker_hi": 307.361, "mean": 288.416, "std": 7.633, "n": 18398}, "6": {"min": 245.742, "q1": 282.319, "median": 287.249, "q3": 292.406, "max": 319.81, "whisker_lo": 267.446, "whisker_hi": 307.467, "mean": 287.751, "std": 7.891, "n": 18345}, "7": {"min": 258.976, "q1": 282.153, "median": 286.634, "q3": 291.57, "max": 319.957, "whisker_lo": 268.298, "whisker_hi": 305.686, "mean": 287.481, "std": 8.001, "n": 17100}}}, "table_rows": [{"site": 0, "Gen1_1003_before_mean": 289.913, "Gen1_1003_before_std": 7.567, "Gen1_1003_before_n": 14613, "Gen1_1003_After_mean": 288.006, "Gen1_1003_After_std": 6.704, "Gen1_1003_After_n": 15490, "Gen2_2101_mean": 288.072, "Gen2_2101_std": 7.56, "Gen2_2101_n": 16790, "diff_before_after": -1.907, "diff_before_after_pct": -0.66, "diff_after_gen2": 0.066, "diff_after_gen2_pct": 0.02, "diff_before_gen2": -1.841, "diff_before_gen2_pct": -0.64}, {"site": 1, "Gen1_1003_before_mean": 289.179, "Gen1_1003_before_std": 7.815, "Gen1_1003_before_n": 16729, "Gen1_1003_After_mean": 287.401, "Gen1_1003_After_std": 7.275, "Gen1_1003_After_n": 17216, "Gen2_2101_mean": 285.896, "Gen2_2101_std": 7.177, "Gen2_2101_n": 18384, "diff_before_after": -1.778, "diff_before_after_pct": -0.61, "diff_after_gen2": -1.505, "diff_after_gen2_pct": -0.52, "diff_before_gen2": -3.283, "diff_before_gen2_pct": -1.14}, {"site": 2, "Gen1_1003_before_mean": 289.676, "Gen1_1003_before_std": 7.894, "Gen1_1003_before_n": 16738, "Gen1_1003_After_mean": 288.087, "Gen1_1003_After_std": 7.353, "Gen1_1003_After_n": 17258, "Gen2_2101_mean": 287.35, "Gen2_2101_std": 7.639, "Gen2_2101_n": 18263, "diff_before_after": -1.589, "diff_before_after_pct": -0.55, "diff_after_gen2": -0.737, "diff_after_gen2_pct": -0.26, "diff_before_gen2": -2.326, "diff_before_gen2_pct": -0.8}, {"site": 3, "Gen1_1003_before_mean": 288.855, "Gen1_1003_before_std": 7.126, "Gen1_1003_before_n": 15498, "Gen1_1003_After_mean": 286.771, "Gen1_1003_After_std": 6.589, "Gen1_1003_After_n": 15758, "Gen2_2101_mean": 286.704, "Gen2_2101_std": 6.87, "Gen2_2101_n": 16829, "diff_before_after": -2.084, "diff_before_after_pct": -0.72, "diff_after_gen2": -0.067, "diff_after_gen2_pct": -0.02, "diff_before_gen2": -2.151, "diff_before_gen2_pct": -0.74}, {"site": 4, "Gen1_1003_before_mean": 290.904, "Gen1_1003_before_std": 8.19, "Gen1_1003_before_n": 15526, "Gen1_1003_After_mean": 289.365, "Gen1_1003_After_std": 7.316, "Gen1_1003_After_n": 16179, "Gen2_2101_mean": 288.846, "Gen2_2101_std": 8.474, "Gen2_2101_n": 17185, "diff_before_after": -1.539, "diff_before_after_pct": -0.53, "diff_after_gen2": -0.519, "diff_after_gen2_pct": -0.18, "diff_before_gen2": -2.058, "diff_before_gen2_pct": -0.71}, {"site": 5, "Gen1_1003_before_mean": 290.964, "Gen1_1003_before_std": 8.183, "Gen1_1003_before_n": 15624, "Gen1_1003_After_mean": 289.437, "Gen1_1003_After_std": 7.498, "Gen1_1003_After_n": 16909, "Gen2_2101_mean": 288.416, "Gen2_2101_std": 7.634, "Gen2_2101_n": 18398, "diff_before_after": -1.527, "diff_before_after_pct": -0.52, "diff_after_gen2": -1.021, "diff_after_gen2_pct": -0.35, "diff_before_gen2": -2.548, "diff_before_gen2_pct": -0.88}, {"site": 6, "Gen1_1003_before_mean": 291.3, "Gen1_1003_before_std": 8.48, "Gen1_1003_before_n": 16508, "Gen1_1003_After_mean": 290.021, "Gen1_1003_After_std": 7.556, "Gen1_1003_After_n": 17431, "Gen2_2101_mean": 287.751, "Gen2_2101_std": 7.891, "Gen2_2101_n": 18345, "diff_before_after": -1.279, "diff_before_after_pct": -0.44, "diff_after_gen2": -2.27, "diff_after_gen2_pct": -0.78, "diff_before_gen2": -3.549, "diff_before_gen2_pct": -1.22}, {"site": 7, "Gen1_1003_before_mean": 289.901, "Gen1_1003_before_std": 7.773, "Gen1_1003_before_n": 15369, "Gen1_1003_After_mean": 288.216, "Gen1_1003_After_std": 7.282, "Gen1_1003_After_n": 16119, "Gen2_2101_mean": 287.481, "Gen2_2101_std": 8.001, "Gen2_2101_n": 17100, "diff_before_after": -1.685, "diff_before_after_pct": -0.58, "diff_after_gen2": -0.735, "diff_after_gen2_pct": -0.26, "diff_before_gen2": -2.42, "diff_before_gen2_pct": -0.83}], "error_stats": {"before_after": {"mean": -1.673, "std": 0.234, "mae": 1.673, "rmse": 1.69, "max_abs": 2.084, "max_site": 3, "min_abs": 1.279, "min_site": 6}, "after_gen2": {"mean": -0.849, "std": 0.713, "mae": 0.865, "rmse": 1.108, "max_abs": 2.27, "max_site": 6, "min_abs": 0.066, "min_site": 0}, "before_gen2": {"mean": -2.522, "std": 0.559, "mae": 2.522, "rmse": 2.583, "max_abs": 3.549, "max_site": 6, "min_abs": 1.841, "min_site": 0}}, "overall": {"n": {"Gen1_1003_before": 126605, "Gen1_1003_After": 132360, "Gen2_2101": 141294}, "mean": {"Gen1_1003_before": 290.086, "Gen1_1003_After": 288.431, "Gen2_2101": 287.558}, "std": {"Gen1_1003_before": 7.939, "Gen1_1003_After": 7.29, "Gen2_2101": 7.72}, "diff_before_after": -1.655, "diff_before_after_pct": -0.57, "diff_after_gen2": -0.873, "diff_after_gen2_pct": -0.3, "diff_before_gen2": -2.528, "diff_before_gen2_pct": -0.87}, "uniformity": {"Gen1_1003_before": 0.885, "Gen1_1003_After": 1.107, "Gen2_2101": 0.944}, "overall_fail": {"Gen1_1003_before": {"total": 126809, "failn": 26, "fail_rate_pct": 0.0205}, "Gen1_1003_After": {"total": 132364, "failn": 0, "fail_rate_pct": 0.0}, "Gen2_2101": {"total": 141819, "failn": 54, "fail_rate_pct": 0.0381}}, "site_fail_table": [{"site": 0, "Gen1_1003_before_total": 14640, "Gen1_1003_before_failn": 1, "Gen1_1003_before_rate": 0.0068, "Gen1_1003_After_total": 15490, "Gen1_1003_After_failn": 0, "Gen1_1003_After_rate": 0.0, "Gen2_2101_total": 16840, "Gen2_2101_failn": 0, "Gen2_2101_rate": 0.0}, {"site": 1, "Gen1_1003_before_total": 16747, "Gen1_1003_before_failn": 0, "Gen1_1003_before_rate": 0.0, "Gen1_1003_After_total": 17216, "Gen1_1003_After_failn": 0, "Gen1_1003_After_rate": 0.0, "Gen2_2101_total": 18433, "Gen2_2101_failn": 0, "Gen2_2101_rate": 0.0}, {"site": 2, "Gen1_1003_before_total": 16762, "Gen1_1003_before_failn": 4, "Gen1_1003_before_rate": 0.0239, "Gen1_1003_After_total": 17258, "Gen1_1003_After_failn": 0, "Gen1_1003_After_rate": 0.0, "Gen2_2101_total": 18322, "Gen2_2101_failn": 0, "Gen2_2101_rate": 0.0}, {"site": 3, "Gen1_1003_before_total": 15516, "Gen1_1003_before_failn": 0, "Gen1_1003_before_rate": 0.0, "Gen1_1003_After_total": 15758, "Gen1_1003_After_failn": 0, "Gen1_1003_After_rate": 0.0, "Gen2_2101_total": 16869, "Gen2_2101_failn": 1, "Gen2_2101_rate": 0.0059}, {"site": 4, "Gen1_1003_before_total": 15558, "Gen1_1003_before_failn": 7, "Gen1_1003_before_rate": 0.045, "Gen1_1003_After_total": 16179, "Gen1_1003_After_failn": 0, "Gen1_1003_After_rate": 0.0, "Gen2_2101_total": 17261, "Gen2_2101_failn": 15, "Gen2_2101_rate": 0.0869}, {"site": 5, "Gen1_1003_before_total": 15652, "Gen1_1003_before_failn": 3, "Gen1_1003_before_rate": 0.0192, "Gen1_1003_After_total": 16911, "Gen1_1003_After_failn": 0, "Gen1_1003_After_rate": 0.0, "Gen2_2101_total": 18481, "Gen2_2101_failn": 9, "Gen2_2101_rate": 0.0487}, {"site": 6, "Gen1_1003_before_total": 16534, "Gen1_1003_before_failn": 2, "Gen1_1003_before_rate": 0.0121, "Gen1_1003_After_total": 17431, "Gen1_1003_After_failn": 0, "Gen1_1003_After_rate": 0.0, "Gen2_2101_total": 18432, "Gen2_2101_failn": 7, "Gen2_2101_rate": 0.038}, {"site": 7, "Gen1_1003_before_total": 15400, "Gen1_1003_before_failn": 9, "Gen1_1003_before_rate": 0.0584, "Gen1_1003_After_total": 16121, "Gen1_1003_After_failn": 0, "Gen1_1003_After_rate": 0.0, "Gen2_2101_total": 17181, "Gen2_2101_failn": 22, "Gen2_2101_rate": 0.128}], "spec": {"lower": 240.0, "upper": 320.0}}
+;
+const SPEC3 = DATA3.spec;
+
+/* ---------- Hero stat strip ---------- */
+safeRun(function(){
+  const strip = document.getElementById("vf1HeroStrip");
+  const labels = {Gen1_1003_before:"調整前 (Before)", Gen1_1003_After:"調整後 (After)", Gen2_2101:"Gen2_2101"};
+  GROUPS.forEach(g=>{
+    const c = COLORS[g];
+    const cell = document.createElement("div");
+    cell.className = "stat-cell";
+    cell.style.borderTop = "3px solid " + c.solid;
+    cell.innerHTML =
+      '<div class="lbl"><span class="dot" style="background:'+c.solid+'"></span>'+labels[g]+'</div>' +
+      '<div class="val">'+fmt(DATA3.overall.mean[g])+'<span class="unit">mV</span></div>' +
+      '<div class="sub">&sigma; = '+fmt(DATA3.overall.std[g])+' mV　·　規格 '+SPEC3.lower+'–'+SPEC3.upper+' mV　·　n = '+DATA3.overall.n[g].toLocaleString()+'</div>';
+    strip.appendChild(cell);
+  });
+}, "vf1HeroStrip", "vf1-hero-strip");
+
+/* ---------- Histogram ---------- */
+safeRun(function(){
+  document.getElementById("vf1HistN").textContent =
+    "n(before)="+DATA3.overall.n.Gen1_1003_before.toLocaleString()+" · n(after)="+DATA3.overall.n.Gen1_1003_After.toLocaleString()+" · n(gen2)="+DATA3.overall.n.Gen2_2101.toLocaleString();
+  let maxPct = 0;
+  GROUPS.forEach(g=>{ DATA3.hist_data[g].forEach(v=>{ if(v>maxPct) maxPct=v; }); });
+  const yMax = Math.ceil((maxPct*1.15)/5)*5;
+  const series = GROUPS.map(g=>({ label: COLORS[g].label, solid: COLORS[g].solid, soft: COLORS[g].soft, values: DATA3.hist_data[g] }));
+  const svg = drawLineChartSVG({ width: 960, height: 360, labels: DATA3.bin_labels, series: series, yMax: yMax });
+  document.getElementById("vf1HistSvgWrap").innerHTML = svg;
+}, "vf1HistSvgWrap", "vf1-histogram");
+
+/* ---------- Overall box plot ---------- */
+safeRun(function(){
+  const groups = GROUPS.map(g=>({key:g, stats: DATA3.overall_box[g]}));
+  const svg = drawBoxSVG({width:340, height:300, groups:groups, yMin:230, yMax:330, showAxis:true, hideGlobalLimit:true, specBand:SPEC3});
+  document.getElementById("vf1OverallBoxSvg").innerHTML = svg;
+
+  const legend = document.getElementById("vf1OverallBoxLegend");
+  GROUPS.forEach(g=>{
+    const s = DATA3.overall_box[g];
+    const c = COLORS[g];
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML =
+      '<span class="sw" style="background:'+c.solid+'"></span>' +
+      '<div><div class="name">'+c.label+'</div>' +
+      '<div class="figs">median '+fmt(s.median)+' · Q1–Q3 '+fmt(s.q1)+'–'+fmt(s.q3)+' · mean '+fmt(s.mean)+' · n '+s.n.toLocaleString()+'</div></div>';
+    legend.appendChild(row);
+  });
+}, "vf1OverallBoxSvg", "vf1-overall-box");
+
+/* ---------- Per-site box plots ---------- */
+safeRun(function(){
+  const grid = document.getElementById("vf1SiteBoxGrid");
+  for(let site=0; site<8; site++){
+    const groups = GROUPS.map(g=>({key:g, stats: DATA3.site_box[g][site]}));
+    const svg = drawBoxSVG({width:230, height:190, marginLeft:30, marginBottom:18, groups:groups, yMin:230, yMax:330, showAxis:true, hideGlobalLimit:true, specBand:SPEC3});
+    const panel = document.createElement("div");
+    panel.className = "site-panel";
+    const meanA = DATA3.site_box.Gen1_1003_After[site].mean;
+    const meanG2 = DATA3.site_box.Gen2_2101[site].mean;
+    panel.innerHTML = '<div class="site-title">Site '+site+'</div><div class="site-sub">After '+fmt(meanA)+' &rarr; Gen2 '+fmt(meanG2)+' mV</div>'+svg;
+    grid.appendChild(panel);
+  }
+}, "vf1SiteBoxGrid", "vf1-site-box");
+
+/* ---------- Site comparison table ---------- */
+safeRun(function(){
+  const table = document.getElementById("vf1SiteTable");
+  let thead = '<thead>' +
+    '<tr>' +
+      '<th rowspan="2">Site#</th>' +
+      '<th colspan="2" class="group-head">Before</th>' +
+      '<th colspan="2" class="group-head">After</th>' +
+      '<th colspan="2" class="group-head">Gen2</th>' +
+      '<th colspan="1" class="group-head">Before&rarr;After</th>' +
+      '<th colspan="1" class="group-head">After&rarr;Gen2</th>' +
+      '<th colspan="1" class="group-head">Before&rarr;Gen2</th>' +
+    '</tr>' +
+    '<tr>' +
+      '<th class="mono">Mean</th><th class="mono">Std</th>' +
+      '<th class="mono">Mean</th><th class="mono">Std</th>' +
+      '<th class="mono">Mean</th><th class="mono">Std</th>' +
+      '<th class="mono">Diff (%)</th>' +
+      '<th class="mono">Diff (%)</th>' +
+      '<th class="mono">Diff (%)</th>' +
+    '</tr>' +
+  '</thead>';
+  let tbody = "<tbody>";
+  DATA3.table_rows.forEach(function(r){
+    const cls = function(v){ return v>0 ? "pos" : (v<0 ? "neg" : ""); };
+    tbody += '<tr>' +
+      '<td>Site '+r.site+'</td>' +
+      '<td class="mono">'+fmt(r.Gen1_1003_before_mean)+'</td><td class="mono">'+fmt(r.Gen1_1003_before_std)+'</td>' +
+      '<td class="mono">'+fmt(r.Gen1_1003_After_mean)+'</td><td class="mono">'+fmt(r.Gen1_1003_After_std)+'</td>' +
+      '<td class="mono">'+fmt(r.Gen2_2101_mean)+'</td><td class="mono">'+fmt(r.Gen2_2101_std)+'</td>' +
+      '<td class="mono '+cls(r.diff_before_after)+'">'+fmt(r.diff_before_after)+' ('+fmtPct(r.diff_before_after_pct)+')</td>' +
+      '<td class="mono '+cls(r.diff_after_gen2)+'">'+fmt(r.diff_after_gen2)+' ('+fmtPct(r.diff_after_gen2_pct)+')</td>' +
+      '<td class="mono '+cls(r.diff_before_gen2)+'">'+fmt(r.diff_before_gen2)+' ('+fmtPct(r.diff_before_gen2_pct)+')</td>' +
+    '</tr>';
+  });
+  tbody += "</tbody>";
+  table.innerHTML = thead + tbody;
+}, "vf1SiteTable", "vf1-site-table");
+
+/* ---------- Fail rate strip + table ---------- */
+safeRun(function(){
+  const strip = document.getElementById("vf1FailStrip");
+  const labels = {Gen1_1003_before:"調整前 (Before)", Gen1_1003_After:"調整後 (After)", Gen2_2101:"Gen2_2101"};
+  GROUPS.forEach(g=>{
+    const c = COLORS[g];
+    const f = DATA3.overall_fail[g];
+    const cell = document.createElement("div");
+    cell.className = "stat-cell";
+    cell.style.borderTop = "3px solid " + c.solid;
+    cell.innerHTML =
+      '<div class="lbl"><span class="dot" style="background:'+c.solid+'"></span>'+labels[g]+'</div>' +
+      '<div class="val">'+fmt(f.fail_rate_pct,4)+'<span class="unit">%</span></div>' +
+      '<div class="sub">不良顆數 '+f.failn.toLocaleString()+' / Total '+f.total.toLocaleString()+'</div>';
+    strip.appendChild(cell);
+  });
+}, "vf1FailStrip", "vf1-fail-strip");
+
+safeRun(function(){
+  const table = document.getElementById("vf1FailTable");
+  let thead = '<thead>' +
+    '<tr>' +
+      '<th rowspan="2">Site#</th>' +
+      '<th colspan="3" class="group-head">Before</th>' +
+      '<th colspan="3" class="group-head">After</th>' +
+      '<th colspan="3" class="group-head">Gen2</th>' +
+    '</tr>' +
+    '<tr>' +
+      '<th class="mono">Total</th><th class="mono">Fail</th><th class="mono">Rate</th>' +
+      '<th class="mono">Total</th><th class="mono">Fail</th><th class="mono">Rate</th>' +
+      '<th class="mono">Total</th><th class="mono">Fail</th><th class="mono">Rate</th>' +
+    '</tr>' +
+  '</thead>';
+  let tbody = "<tbody>";
+  DATA3.site_fail_table.forEach(function(r){
+    tbody += '<tr>' +
+      '<td>Site '+r.site+'</td>' +
+      '<td class="mono">'+r.Gen1_1003_before_total.toLocaleString()+'</td><td class="mono">'+r.Gen1_1003_before_failn.toLocaleString()+'</td><td class="mono">'+fmt(r.Gen1_1003_before_rate,4)+'%</td>' +
+      '<td class="mono">'+r.Gen1_1003_After_total.toLocaleString()+'</td><td class="mono">'+r.Gen1_1003_After_failn.toLocaleString()+'</td><td class="mono">'+fmt(r.Gen1_1003_After_rate,4)+'%</td>' +
+      '<td class="mono">'+r.Gen2_2101_total.toLocaleString()+'</td><td class="mono">'+r.Gen2_2101_failn.toLocaleString()+'</td><td class="mono">'+fmt(r.Gen2_2101_rate,4)+'%</td>' +
+    '</tr>';
+  });
+  tbody += "</tbody>";
+  table.innerHTML = thead + tbody;
+}, "vf1FailTable", "vf1-fail-table");
+
+/* ---------- Error stats cards ---------- */
+safeRun(function(){
+  const grid = document.getElementById("vf1ErrGrid");
+  const defs = [
+    {key:"before_after", title:"Before &rarr; After", note:"程式調整造成的變化"},
+    {key:"after_gen2", title:"After &rarr; Gen2", note:"世代間差異（調整後基準）"},
+    {key:"before_gen2", title:"Before &rarr; Gen2", note:"世代間差異（調整前基準）"}
+  ];
+  defs.forEach(function(d){
+    const s = DATA3.error_stats[d.key];
+    const card = document.createElement("div");
+    card.className = "err-card";
+    card.innerHTML =
+      '<div class="title">'+d.title+'</div>' +
+      '<div style="font-size:12px;color:var(--sub)">'+d.note+'</div>' +
+      '<div class="headline">'+fmt(s.mean)+' mV</div>' +
+      '<div class="rows">' +
+        '<div>平均差異 (Mean Diff)<span class="v">'+fmt(s.mean)+'</span></div>' +
+        '<div>標準差 (Site-to-Site Std)<span class="v">'+fmt(s.std)+'</span></div>' +
+        '<div>MAE<span class="v">'+fmt(s.mae)+'</span></div>' +
+        '<div>RMSE<span class="v">'+fmt(s.rmse)+'</span></div>' +
+        '<div>最大絕對差異<span class="v">'+fmt(s.max_abs)+' (Site '+s.max_site+')</span></div>' +
+        '<div>最小絕對差異<span class="v">'+fmt(s.min_abs)+' (Site '+s.min_site+')</span></div>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}, "vf1ErrGrid", "vf1-error-stats");
+
+/* ---------- Findings ---------- */
+safeRun(function(){
+  const o = DATA3.overall;
+  const u = DATA3.uniformity;
+  const list = document.getElementById("vf1FindingsList");
+  const items = [
+    "<b>VF1 是三個測項中三組表現最一致、最健康的一項</b>：均值僅在 "+fmt(o.mean.Gen1_1003_before)+"（Before）、"+fmt(o.mean.Gen1_1003_After)+"（After)、"+fmt(o.mean.Gen2_2101)+"（Gen2）mV 之間微幅波動，三者兩兩差異都在 1% 以內（Before&rarr;After "+fmtPct(o.diff_before_after_pct)+"，After&rarr;Gen2 "+fmtPct(o.diff_after_gen2_pct)+"），遠比 DIR0(9)、IR0(8) 的變化幅度小。",
+    "<b>Fail Rate 極低，調整後甚至歸零</b>：Before 不良率僅 "+fmt(DATA3.overall_fail.Gen1_1003_before.fail_rate_pct,4)+"%（"+DATA3.overall_fail.Gen1_1003_before.failn+" 顆），After 完全無不良（0 顆），Gen2 為 "+fmt(DATA3.overall_fail.Gen2_2101.fail_rate_pct,4)+"%（"+DATA3.overall_fail.Gen2_2101.failn+" 顆）——三者數量級都在千分之一以下，VF1 不是三個測項中影響良率的主要因素。",
+    "<b>Site 間均勻度三組皆佳且差異不大</b>：以各 Site 平均值標準差衡量，Before "+fmt(u.Gen1_1003_before)+" mV、After "+fmt(u.Gen1_1003_After)+" mV、Gen2 "+fmt(u.Gen2_2101)+" mV，數值都遠小於 DIR0(9)／IR0(8) 對應的站間差異，顯示 VF1 對 Site 或探針卡差異不敏感。",
+    "<b>資料處理上的特殊狀況</b>：Gen1_1003_before 資料夾內混雜了 VF1(14) 與 VF1(17) 兩種測試程式版本（欄位位置與 Bin# 判定基準皆不同），本分析已依每個檔案各自的表頭動態定位欄位與 Fail Bin，確保跨版本合併統計時數值與不良判定皆正確。",
+    "<b>綜合建議</b>：三個測項合併來看，DIR0(9) 與 IR0(8) 才是驅動良率與世代差異的主要測項，VF1 目前表現穩定、風險低，後續監控重點可維持在 DIR0(9)／IR0(8) 上，VF1 以定期抽查確認無劣化即可。"
+  ];
+  items.forEach(function(t,i){
+    const row = document.createElement("div");
+    row.className = "finding";
+    row.innerHTML = '<div class="num">'+String(i+1).padStart(2,'0')+'</div><div class="txt">'+t+'</div>';
+    list.appendChild(row);
+  });
+}, "vf1FindingsList", "vf1-findings");
+
+}catch(e){ console.error("VF1 section fatal error", e); }
 })();
 </script>
 
