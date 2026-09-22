@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>機台差異比較：3380P-ATE-1003 vs 3380P-ATE-2101（IR0/DIR0/VF1）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+TC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7F9; --panel:#FFFFFF; --ink:#161B22; --sub:#5B6472; --rule:#DCE0E6;
+  --a:#D97B2E; --a-soft:rgba(217,123,46,0.16);
+  --b:#2E63E0; --b-soft:rgba(46,99,224,0.14);
+  --good:#188A5C; --bad:#C4432B;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#12151B; --panel:#181C24; --ink:#EDEFF3; --sub:#9AA3B2; --rule:#2A2F3A;
+  }
+}
+:root[data-theme="dark"]{ --bg:#12151B; --panel:#181C24; --ink:#EDEFF3; --sub:#9AA3B2; --rule:#2A2F3A; }
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{ margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans","IBM Plex Sans TC",-apple-system,"Segoe UI",sans-serif;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:calc(env(safe-area-inset-bottom,0px) + 40px); line-height:1.55; }
+.mono{font-family:"IBM Plex Mono",Consolas,monospace;}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+header.hero{border-bottom:1px solid var(--rule);padding:56px 0 36px;}
+.kicker{font-size:13px;color:var(--sub);letter-spacing:.02em;margin:0 0 10px;}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.18;margin:0 0 14px;font-weight:700;letter-spacing:-0.01em;}
+h1 .accent{color:var(--b);}
+.dek{font-size:16px;color:var(--sub);max-width:680px;margin:0 0 22px;}
+.legend-row{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--sub);}
+.legend-chip{display:inline-flex;align-items:center;gap:7px;}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block;}
+.dot.a{background:var(--a);} .dot.b{background:var(--b);}
+
+.overview-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin:28px 0 0;}
+.ov-cell{background:var(--panel);padding:18px 20px;}
+.ov-cell .lbl{font-size:12px;color:var(--sub);margin-bottom:8px;}
+.ov-cell .diffval{font-size:26px;font-weight:600;font-family:"IBM Plex Mono",Consolas,monospace;}
+.ov-cell .diffval.big{color:var(--bad);}
+.ov-cell .sub{font-size:12px;color:var(--sub);margin-top:6px;}
+
+.stat-strip{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:14px;}
+.stat-cell{background:var(--panel);padding:18px 20px;}
+.stat-cell .lbl{font-size:12.5px;color:var(--sub);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.stat-cell .val{font-size:28px;font-weight:600;font-family:"IBM Plex Mono",Consolas,monospace;letter-spacing:-0.01em;}
+.stat-cell .unit{font-size:14px;color:var(--sub);font-weight:400;margin-left:3px;}
+.stat-cell .sub{font-size:12.5px;color:var(--sub);margin-top:6px;}
+
+section{padding:44px 0;border-bottom:1px solid var(--rule);}
+section:last-of-type{border-bottom:none;}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:6px;flex-wrap:wrap;}
+h2{font-size:22px;margin:0;font-weight:600;letter-spacing:-0.005em;}
+.item-title{font-size:30px;margin:0 0 6px;font-weight:700;}
+.sec-note{font-size:13px;color:var(--sub);margin:0 0 22px;max-width:680px;}
+.n-tag{font-size:12px;color:var(--sub);font-family:"IBM Plex Mono",Consolas,monospace;}
+.panel{background:var(--panel);border:1px solid var(--rule);padding:22px;}
+.methodology{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.methodology .m-card{background:var(--panel);border:1px solid var(--rule);padding:16px 18px;}
+.methodology .m-card .k{font-size:12px;color:var(--sub);margin-bottom:6px;}
+.methodology .m-card .v{font-size:14.5px;font-weight:500;}
+svg{display:block;max-width:100%;height:auto;}
+.hist-svg-wrap{width:100%;}
+.box-overall-wrap{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;}
+.box-overall-svg{flex:0 0 auto;}
+.box-overall-legend{flex:1;min-width:220px;display:grid;gap:10px;font-size:13px;align-content:start;}
+.box-overall-legend .row{display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;}
+.box-overall-legend .sw{width:14px;height:14px;margin-top:2px;}
+.box-overall-legend .name{font-weight:600;}
+.box-overall-legend .figs{color:var(--sub);font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px;}
+.site-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media (max-width:760px){ .site-grid{grid-template-columns:repeat(2,1fr);} .methodology{grid-template-columns:1fr;} .overview-strip{grid-template-columns:1fr;} .stat-strip{grid-template-columns:1fr;} .err-grid{grid-template-columns:1fr;} }
+.site-panel{background:var(--panel);border:1px solid var(--rule);padding:12px 12px 8px;}
+.site-panel .site-title{font-size:12.5px;font-weight:600;margin-bottom:2px;}
+.site-panel .site-sub{font-size:11px;color:var(--sub);margin-bottom:6px;font-family:"IBM Plex Mono",Consolas,monospace;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap;}
+th:first-child,td:first-child{text-align:left;}
+thead th{color:var(--sub);font-weight:500;font-size:12px;border-bottom:1px solid var(--ink);}
+tbody tr:hover{background:var(--bg);}
+td.mono, th.mono{font-family:"IBM Plex Mono",Consolas,monospace;}
+td.neg{color:var(--good);} td.pos{color:var(--bad);}
+.table-scroll{overflow-x:auto;}
+.group-head{font-size:11px;color:var(--sub);text-align:center !important;border-bottom:1px solid var(--rule);}
+.err-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.err-card{background:var(--panel);border:1px solid var(--rule);padding:18px 20px;}
+.err-card .k{font-size:12.5px;color:var(--sub);}
+.err-card .v{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:600;}
+.err-card .rows{margin-top:6px;display:grid;gap:6px;font-size:12.5px;}
+.err-card .rows div{display:flex;justify-content:space-between;color:var(--sub);}
+.err-card .rows span.v{color:var(--ink);}
+.findings{display:grid;gap:14px;}
+.finding{display:grid;grid-template-columns:28px 1fr;gap:12px;}
+.finding .num{font-family:"IBM Plex Mono",Consolas,monospace;font-size:13px;color:var(--sub);padding-top:2px;}
+.finding .txt{font-size:14.5px;}
+.finding .txt b{font-weight:600;}
+.basis-tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;padding:3px 9px;border-radius:3px;white-space:nowrap;}
+.basis-tag.pass-only{background:rgba(24,138,92,0.14);color:#188A5C;border:1px solid rgba(24,138,92,0.35);}
+.basis-tag .dot2{width:6px;height:6px;border-radius:50%;display:inline-block;background:#188A5C;}
+.item-divider{padding-top:56px;padding-bottom:0;border-bottom:none;}
+footer{padding:30px 0 10px;font-size:12px;color:var(--sub);}
+noscript .ns-warn{background:var(--a-soft);border:1px solid var(--a);padding:14px 18px;margin:20px 0;font-size:13.5px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<noscript><div class="ns-warn">此報告需要啟用 JavaScript 才能顯示圖表與表格內容，請在瀏覽器中開啟 JavaScript 後重新整理頁面。</div></noscript>
+
+<header class="hero">
+  <p class="kicker">LLD 測試資料分析報告　<span class="mono">RK32513 · 同批 3 片晶圓，雙機台比對</span></p>
+  <h1>機台差異比較：3380P-ATE-1003 vs. <span class="accent">3380P-ATE-2101</span></h1>
+  <p class="dek">同一批 3 片晶圓（RK32513-01 / 02 / 03）分別在兩台機台（3380P-ATE-1003、3380P-ATE-2101）上測試，比較 <b>IR0(8)</b>、<b>DIR0(9)</b>、<b>VF1(14)</b> 三個測項的量測分佈、各 Site# 差異與誤差統計，以評估機台間的一致性。本資料集無任何 Fail（Bin#=1 100%），因此以下分析涵蓋全部量測資料。</p>
+  <div class="legend-row">
+    <span class="legend-chip"><span class="dot a"></span>3380P-ATE-1003</span>
+    <span class="legend-chip"><span class="dot b"></span>3380P-ATE-2101</span>
+  </div>
+  <div class="overview-strip" id="overviewStrip"></div>
+</header>
+
+<section id="methodology">
+  <div class="sec-head"><h2>資料來源與方法</h2></div>
+  <div class="methodology">
+    <div class="m-card"><div class="k">資料範圍</div><div class="v">同 3 片晶圓分別於兩台機台測試，共 6 個 dlogTDO 檔案，全部為 Bin#=1（無 Fail）</div></div>
+    <div class="m-card"><div class="k">規格</div><div class="v">IR0(8) 0–70 &micro;A ／ DIR0(9) 0–100 nA ／ VF1(14) 220–300 mV，兩機台規格相同</div></div>
+    <div class="m-card"><div class="k">樣本數</div><div class="v" id="mcSampleN"></div></div>
+  </div>
+</section>
+
+<div id="itemsContainer"></div>
+
+<section id="overall-findings">
+  <div class="sec-head"><h2>三測項綜合結論</h2></div>
+  <div class="findings" id="overallFindingsList"></div>
+</section>
+
+<footer>機台差異比較報告 · 資料來源：RK32513-01/02/03 於 3380P-ATE-1003 / 3380P-ATE-2101 dlogTDO 原始測試紀錄 · 圖表以純 SVG 繪製，無外部相依套件</footer>
+</div>
+
+<script>
+"use strict";
+const RAW = {"testers": ["3380P-ATE-1003", "3380P-ATE-2101"], "items": {"IR0_8": {"label": "IR0(8)", "unit": "µA", "spec": {"lower": 0.0, "upper": 70.0}, "bin_labels": ["-12--10", "-10--8", "-8--6", "-6--4", "-4--2", "-2-0", "0-2", "2-4", "4-6", "6-8", "8-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "40-42", "42-44", "44-46", "46-48", "48-50", "50-52", "52-54", "54-56", "56-58", "58-60", "60-62", "62-64", "64-66", "66-68", "68-70", "70-72", "72-74", "74-76", "76-78", "78-80", "80-82"], "hist_data": {"3380P-ATE-1003": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2443, 1.1607, 1.7104, 4.8259, 13.9279, 27.4893, 27.6726, 13.6225, 7.4527, 1.7715, 0.1222, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "3380P-ATE-2101": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2998, 1.199, 2.2182, 4.7962, 15.3477, 29.3765, 26.3789, 12.4101, 6.8345, 1.1391, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "overall_box": {"3380P-ATE-1003": {"min": 12.535, "q1": 22.303, "median": 24.039, "q3": 25.804, "max": 32.401, "whisker_lo": 17.07, "whisker_hi": 31.054, "mean": 24.0, "std": 2.973, "n": 1637}, "3380P-ATE-2101": {"min": 12.634, "q1": 22.088, "median": 23.809, "q3": 25.52, "max": 31.952, "whisker_lo": 16.997, "whisker_hi": 30.619, "mean": 23.773, "std": 2.935, "n": 1668}}, "site_box": {"3380P-ATE-1003": {"0": {"min": 13.992, "q1": 22.382, "median": 24.566, "q3": 26.186, "max": 32.015, "whisker_lo": 17.276, "whisker_hi": 31.545, "mean": 24.304, "std": 3.077, "n": 193}, "1": {"min": 14.079, "q1": 22.178, "median": 23.933, "q3": 25.671, "max": 31.32, "whisker_lo": 17.803, "whisker_hi": 30.214, "mean": 23.926, "std": 2.935, "n": 215}, "2": {"min": 15.396, "q1": 22.07, "median": 24.061, "q3": 25.804, "max": 31.532, "whisker_lo": 16.66, "whisker_hi": 30.614, "mean": 23.908, "std": 2.96, "n": 217}, "3": {"min": 13.201, "q1": 22.797, "median": 24.221, "q3": 26.124, "max": 31.084, "whisker_lo": 17.991, "whisker_hi": 31.084, "mean": 24.35, "std": 3.122, "n": 201}, "4": {"min": 14.212, "q1": 21.937, "median": 23.735, "q3": 25.392, "max": 30.613, "whisker_lo": 17.032, "whisker_hi": 30.372, "mean": 23.768, "std": 2.8, "n": 196}, "5": {"min": 14.308, "q1": 22.068, "median": 23.674, "q3": 25.355, "max": 31.993, "whisker_lo": 17.382, "whisker_hi": 29.98, "mean": 23.687, "std": 2.988, "n": 201}, "6": {"min": 14.833, "q1": 21.981, "median": 23.997, "q3": 25.724, "max": 32.401, "whisker_lo": 17.507, "whisker_hi": 31.151, "mean": 23.799, "std": 2.965, "n": 218}, "7": {"min": 12.535, "q1": 22.777, "median": 24.184, "q3": 25.826, "max": 30.517, "whisker_lo": 19.956, "whisker_hi": 30.11, "mean": 24.303, "std": 2.84, "n": 196}}, "3380P-ATE-2101": {"0": {"min": 13.614, "q1": 21.986, "median": 23.955, "q3": 25.716, "max": 31.455, "whisker_lo": 16.834, "whisker_hi": 30.96, "mean": 23.785, "std": 2.998, "n": 202}, "1": {"min": 13.945, "q1": 21.842, "median": 23.536, "q3": 25.336, "max": 30.987, "whisker_lo": 17.572, "whisker_hi": 29.898, "mean": 23.589, "std": 2.894, "n": 217}, "2": {"min": 15.089, "q1": 21.839, "median": 23.636, "q3": 25.379, "max": 31.099, "whisker_lo": 16.781, "whisker_hi": 30.142, "mean": 23.556, "std": 2.893, "n": 216}, "3": {"min": 13.143, "q1": 22.656, "median": 24.084, "q3": 25.839, "max": 30.825, "whisker_lo": 17.976, "whisker_hi": 30.383, "mean": 24.165, "std": 3.077, "n": 201}, "4": {"min": 14.284, "q1": 21.851, "median": 23.698, "q3": 25.255, "max": 30.481, "whisker_lo": 17.029, "whisker_hi": 30.208, "mean": 23.702, "std": 2.764, "n": 199}, "5": {"min": 14.381, "q1": 22.074, "median": 23.709, "q3": 25.372, "max": 31.938, "whisker_lo": 17.129, "whisker_hi": 30.011, "mean": 23.709, "std": 2.928, "n": 213}, "6": {"min": 14.566, "q1": 21.65, "median": 23.568, "q3": 25.317, "max": 31.952, "whisker_lo": 17.276, "whisker_hi": 30.619, "mean": 23.448, "std": 2.935, "n": 221}, "7": {"min": 12.634, "q1": 22.824, "median": 24.11, "q3": 25.91, "max": 30.461, "whisker_lo": 20.041, "whisker_hi": 30.461, "mean": 24.303, "std": 2.88, "n": 199}}}, "table_rows": [{"site": 0, "3380P-ATE-1003_mean": 24.304, "3380P-ATE-1003_std": 3.085, "3380P-ATE-1003_n": 193, "3380P-ATE-2101_mean": 23.785, "3380P-ATE-2101_std": 3.005, "3380P-ATE-2101_n": 202, "diff": -0.519, "diff_pct": -2.14}, {"site": 1, "3380P-ATE-1003_mean": 23.926, "3380P-ATE-1003_std": 2.942, "3380P-ATE-1003_n": 215, "3380P-ATE-2101_mean": 23.589, "3380P-ATE-2101_std": 2.901, "3380P-ATE-2101_n": 217, "diff": -0.337, "diff_pct": -1.41}, {"site": 2, "3380P-ATE-1003_mean": 23.908, "3380P-ATE-1003_std": 2.967, "3380P-ATE-1003_n": 217, "3380P-ATE-2101_mean": 23.556, "3380P-ATE-2101_std": 2.899, "3380P-ATE-2101_n": 216, "diff": -0.352, "diff_pct": -1.47}, {"site": 3, "3380P-ATE-1003_mean": 24.35, "3380P-ATE-1003_std": 3.129, "3380P-ATE-1003_n": 201, "3380P-ATE-2101_mean": 24.165, "3380P-ATE-2101_std": 3.085, "3380P-ATE-2101_n": 201, "diff": -0.185, "diff_pct": -0.76}, {"site": 4, "3380P-ATE-1003_mean": 23.768, "3380P-ATE-1003_std": 2.807, "3380P-ATE-1003_n": 196, "3380P-ATE-2101_mean": 23.702, "3380P-ATE-2101_std": 2.771, "3380P-ATE-2101_n": 199, "diff": -0.066, "diff_pct": -0.28}, {"site": 5, "3380P-ATE-1003_mean": 23.687, "3380P-ATE-1003_std": 2.995, "3380P-ATE-1003_n": 201, "3380P-ATE-2101_mean": 23.709, "3380P-ATE-2101_std": 2.935, "3380P-ATE-2101_n": 213, "diff": 0.022, "diff_pct": 0.09}, {"site": 6, "3380P-ATE-1003_mean": 23.799, "3380P-ATE-1003_std": 2.972, "3380P-ATE-1003_n": 218, "3380P-ATE-2101_mean": 23.448, "3380P-ATE-2101_std": 2.942, "3380P-ATE-2101_n": 221, "diff": -0.351, "diff_pct": -1.47}, {"site": 7, "3380P-ATE-1003_mean": 24.303, "3380P-ATE-1003_std": 2.847, "3380P-ATE-1003_n": 196, "3380P-ATE-2101_mean": 24.303, "3380P-ATE-2101_std": 2.887, "3380P-ATE-2101_n": 199, "diff": 0.0, "diff_pct": 0.0}], "error_stats": {"mean": -0.224, "std": 0.184, "mae": 0.229, "rmse": 0.289, "max_abs": 0.519, "min_abs": 0.0, "max_site": 0, "min_site": 7}, "overall": {"n": {"3380P-ATE-1003": 1637, "3380P-ATE-2101": 1668}, "mean": {"3380P-ATE-1003": 24.0, "3380P-ATE-2101": 23.773}, "std": {"3380P-ATE-1003": 2.974, "3380P-ATE-2101": 2.936}, "diff": -0.227, "diff_pct": -0.95}, "uniformity": {"3380P-ATE-1003": 0.271, "3380P-ATE-2101": 0.3}, "overall_fail": {"3380P-ATE-1003": {"total": 1637, "failn": 0, "fail_rate_pct": 0.0}, "3380P-ATE-2101": {"total": 1668, "failn": 0, "fail_rate_pct": 0.0}}, "sites_present": [0, 1, 2, 3, 4, 5, 6, 7]}, "DIR0_9": {"label": "DIR0(9)", "unit": "nA", "spec": {"lower": 0.0, "upper": 100.0}, "bin_labels": ["-16--14", "-14--12", "-12--10", "-10--8", "-8--6", "-6--4", "-4--2", "-2-0", "0-2", "2-4", "4-6", "6-8", "8-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24", "24-26", "26-28", "28-30", "30-32", "32-34", "34-36", "36-38", "38-40", "40-42", "42-44", "44-46", "46-48", "48-50", "50-52", "52-54", "54-56", "56-58", "58-60", "60-62", "62-64", "64-66", "66-68", "68-70", "70-72", "72-74", "74-76", "76-78", "78-80", "80-82", "82-84", "84-86", "86-88", "88-90", "90-92", "92-94", "94-96", "96-98", "98-100", "100-102", "102-104", "104-106", "106-108", "108-110", "110-112", "112-114", "114-116"], "hist_data": {"3380P-ATE-1003": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2443, 1.2828, 4.5816, 11.7899, 12.7062, 12.4618, 10.5681, 7.9414, 8.1246, 4.7037, 4.2761, 3.0544, 3.1155, 1.9548, 1.7104, 1.1607, 1.2217, 0.733, 0.4276, 0.9774, 0.6109, 0.4276, 0.5498, 0.1222, 0.2443, 0.3665, 0.4276, 0.1833, 0.3665, 0.1833, 0.3054, 0.2443, 0.2443, 0.1833, 0.2443, 0.1833, 0.3665, 0.1222, 0.3054, 0.2443, 0.1222, 0.1222, 0.1833, 0.0611, 0.2443, 0.1222, 0.1222, 0.0611, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "3380P-ATE-2101": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5396, 15.7674, 43.4652, 27.458, 7.1942, 3.2974, 0.8993, 0.3597, 0.3597, 0.06, 0.0, 0.0, 0.06, 0.0, 0.0, 0.0, 0.06, 0.06, 0.06, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06, 0.0, 0.06, 0.0, 0.0, 0.0, 0.06, 0.0, 0.0, 0.0, 0.0, 0.06, 0.06, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "overall_box": {"3380P-ATE-1003": {"min": 5.548, "q1": 13.119, "median": 17.123, "q3": 24.225, "max": 99.526, "whisker_lo": 5.548, "whisker_hi": 40.687, "mean": 21.721, "std": 14.659, "n": 1637}, "3380P-ATE-2101": {"min": 3.209, "q1": 6.519, "median": 7.589, "q3": 8.951, "max": 99.045, "whisker_lo": 3.209, "whisker_hi": 12.522, "mean": 8.18, "std": 4.795, "n": 1668}}, "site_box": {"3380P-ATE-1003": {"0": {"min": 12.161, "q1": 19.069, "median": 21.404, "q3": 26.658, "max": 85.421, "whisker_lo": 12.161, "whisker_hi": 37.749, "mean": 24.854, "std": 11.373, "n": 193}, "1": {"min": 7.481, "q1": 11.221, "median": 12.824, "q3": 15.593, "max": 92.489, "whisker_lo": 7.481, "whisker_hi": 21.956, "mean": 16.469, "std": 12.195, "n": 215}, "2": {"min": 6.7, "q1": 11.458, "median": 13.109, "q3": 16.216, "max": 87.977, "whisker_lo": 6.7, "whisker_hi": 22.723, "mean": 16.825, "std": 12.499, "n": 217}, "3": {"min": 5.548, "q1": 10.025, "median": 11.777, "q3": 14.697, "max": 96.55, "whisker_lo": 5.548, "whisker_hi": 21.704, "mean": 14.656, "std": 11.205, "n": 201}, "4": {"min": 8.746, "q1": 14.285, "median": 16.326, "q3": 20.213, "max": 80.173, "whisker_lo": 8.746, "whisker_hi": 27.113, "mean": 20.004, "std": 11.987, "n": 196}, "5": {"min": 18.004, "q1": 25.303, "median": 29.195, "q3": 34.937, "max": 90.214, "whisker_lo": 18.004, "whisker_hi": 49.145, "mean": 33.656, "std": 14.822, "n": 201}, "6": {"min": 11.188, "q1": 17.123, "median": 20.139, "q3": 25.66, "max": 99.526, "whisker_lo": 11.188, "whisker_hi": 36.191, "mean": 26.765, "std": 17.891, "n": 218}, "7": {"min": 8.751, "q1": 14.293, "median": 17.405, "q3": 21.002, "max": 94.218, "whisker_lo": 8.751, "whisker_hi": 30.045, "mean": 20.933, "std": 13.483, "n": 196}}, "3380P-ATE-2101": {"0": {"min": 3.209, "q1": 6.029, "median": 7.099, "q3": 8.46, "max": 18.866, "whisker_lo": 3.209, "whisker_hi": 12.059, "mean": 7.445, "std": 2.228, "n": 202}, "1": {"min": 4.767, "q1": 6.811, "median": 7.881, "q3": 8.951, "max": 99.045, "whisker_lo": 4.767, "whisker_hi": 12.064, "mean": 9.124, "std": 9.132, "n": 217}, "2": {"min": 3.698, "q1": 6.91, "median": 7.931, "q3": 9.245, "max": 35.23, "whisker_lo": 3.698, "whisker_hi": 12.652, "mean": 8.398, "std": 2.806, "n": 216}, "3": {"min": 4.005, "q1": 6.057, "median": 7.327, "q3": 8.402, "max": 61.448, "whisker_lo": 4.005, "whisker_hi": 11.723, "mean": 8.079, "std": 5.572, "n": 201}, "4": {"min": 3.809, "q1": 5.86, "median": 6.935, "q3": 8.205, "max": 17.777, "whisker_lo": 3.809, "whisker_hi": 11.721, "mean": 7.339, "std": 2.249, "n": 199}, "5": {"min": 3.99, "q1": 7.007, "median": 7.98, "q3": 9.245, "max": 18.296, "whisker_lo": 3.99, "whisker_hi": 12.165, "mean": 8.265, "std": 2.031, "n": 213}, "6": {"min": 3.8, "q1": 7.016, "median": 8.087, "q3": 9.452, "max": 78.925, "whisker_lo": 3.8, "whisker_hi": 12.862, "mean": 8.848, "std": 5.55, "n": 221}, "7": {"min": 3.591, "q1": 6.212, "median": 7.28, "q3": 8.639, "max": 36.983, "whisker_lo": 3.591, "whisker_hi": 12.036, "mean": 7.767, "std": 3.188, "n": 199}}}, "table_rows": [{"site": 0, "3380P-ATE-1003_mean": 24.854, "3380P-ATE-1003_std": 11.403, "3380P-ATE-1003_n": 193, "3380P-ATE-2101_mean": 7.445, "3380P-ATE-2101_std": 2.233, "3380P-ATE-2101_n": 202, "diff": -17.409, "diff_pct": -70.05}, {"site": 1, "3380P-ATE-1003_mean": 16.469, "3380P-ATE-1003_std": 12.224, "3380P-ATE-1003_n": 215, "3380P-ATE-2101_mean": 9.124, "3380P-ATE-2101_std": 9.153, "3380P-ATE-2101_n": 217, "diff": -7.345, "diff_pct": -44.6}, {"site": 2, "3380P-ATE-1003_mean": 16.825, "3380P-ATE-1003_std": 12.527, "3380P-ATE-1003_n": 217, "3380P-ATE-2101_mean": 8.398, "3380P-ATE-2101_std": 2.813, "3380P-ATE-2101_n": 216, "diff": -8.427, "diff_pct": -50.09}, {"site": 3, "3380P-ATE-1003_mean": 14.656, "3380P-ATE-1003_std": 11.233, "3380P-ATE-1003_n": 201, "3380P-ATE-2101_mean": 8.079, "3380P-ATE-2101_std": 5.586, "3380P-ATE-2101_n": 201, "diff": -6.577, "diff_pct": -44.88}, {"site": 4, "3380P-ATE-1003_mean": 20.004, "3380P-ATE-1003_std": 12.018, "3380P-ATE-1003_n": 196, "3380P-ATE-2101_mean": 7.339, "3380P-ATE-2101_std": 2.255, "3380P-ATE-2101_n": 199, "diff": -12.665, "diff_pct": -63.31}, {"site": 5, "3380P-ATE-1003_mean": 33.656, "3380P-ATE-1003_std": 14.859, "3380P-ATE-1003_n": 201, "3380P-ATE-2101_mean": 8.265, "3380P-ATE-2101_std": 2.036, "3380P-ATE-2101_n": 213, "diff": -25.391, "diff_pct": -75.44}, {"site": 6, "3380P-ATE-1003_mean": 26.765, "3380P-ATE-1003_std": 17.932, "3380P-ATE-1003_n": 218, "3380P-ATE-2101_mean": 8.848, "3380P-ATE-2101_std": 5.563, "3380P-ATE-2101_n": 221, "diff": -17.917, "diff_pct": -66.94}, {"site": 7, "3380P-ATE-1003_mean": 20.933, "3380P-ATE-1003_std": 13.518, "3380P-ATE-1003_n": 196, "3380P-ATE-2101_mean": 7.767, "3380P-ATE-2101_std": 3.196, "3380P-ATE-2101_n": 199, "diff": -13.166, "diff_pct": -62.9}], "error_stats": {"mean": -13.612, "std": 6.005, "mae": 13.612, "rmse": 14.878, "max_abs": 25.391, "min_abs": 6.577, "max_site": 5, "min_site": 3}, "overall": {"n": {"3380P-ATE-1003": 1637, "3380P-ATE-2101": 1668}, "mean": {"3380P-ATE-1003": 21.721, "3380P-ATE-2101": 8.18}, "std": {"3380P-ATE-1003": 14.663, "3380P-ATE-2101": 4.796}, "diff": -13.541, "diff_pct": -62.34}, "uniformity": {"3380P-ATE-1003": 6.355, "3380P-ATE-2101": 0.634}, "overall_fail": {"3380P-ATE-1003": {"total": 1637, "failn": 0, "fail_rate_pct": 0.0}, "3380P-ATE-2101": {"total": 1668, "failn": 0, "fail_rate_pct": 0.0}}, "sites_present": [0, 1, 2, 3, 4, 5, 6, 7]}, "VF1": {"label": "VF1(14)", "unit": "mV", "spec": {"lower": 220.0, "upper": 300.0}, "bin_labels": ["208-210", "210-212", "212-214", "214-216", "216-218", "218-220", "220-222", "222-224", "224-226", "226-228", "228-230", "230-232", "232-234", "234-236", "236-238", "238-240", "240-242", "242-244", "244-246", "246-248", "248-250", "250-252", "252-254", "254-256", "256-258", "258-260", "260-262", "262-264", "264-266", "266-268", "268-270", "270-272", "272-274", "274-276", "276-278", "278-280", "280-282", "282-284", "284-286", "286-288", "288-290", "290-292", "292-294", "294-296", "296-298", "298-300", "300-302", "302-304", "304-306", "306-308", "308-310", "310-312"], "hist_data": {"3380P-ATE-1003": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1222, 0.5498, 2.81, 7.4527, 12.6451, 19.2425, 22.1136, 14.7221, 8.0024, 5.1313, 2.4435, 1.4661, 1.2217, 1.1607, 0.4887, 0.2443, 0.1833, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "3380P-ATE-2101": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06, 0.5995, 3.1775, 8.3933, 13.1295, 19.2446, 24.2206, 13.9089, 7.9137, 3.4173, 1.7986, 1.259, 1.199, 0.6595, 0.5396, 0.3597, 0.1199, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "overall_box": {"3380P-ATE-1003": {"min": 266.405, "q1": 276.121, "median": 278.599, "q3": 281.259, "max": 298.901, "whisker_lo": 268.715, "whisker_hi": 288.819, "mean": 279.085, "std": 4.61, "n": 1637}, "3380P-ATE-2101": {"min": 266.526, "q1": 275.96, "median": 278.524, "q3": 280.83, "max": 299.597, "whisker_lo": 268.695, "whisker_hi": 288.124, "mean": 278.755, "std": 4.438, "n": 1668}}, "site_box": {"3380P-ATE-1003": {"0": {"min": 269.704, "q1": 276.519, "median": 278.584, "q3": 281.693, "max": 298.901, "whisker_lo": 269.704, "whisker_hi": 288.518, "mean": 279.487, "std": 4.802, "n": 193}, "1": {"min": 266.405, "q1": 274.784, "median": 277.161, "q3": 279.233, "max": 295.096, "whisker_lo": 268.715, "whisker_hi": 284.889, "mean": 277.563, "std": 4.55, "n": 215}, "2": {"min": 267.756, "q1": 275.873, "median": 278.194, "q3": 280.733, "max": 291.191, "whisker_lo": 269.981, "whisker_hi": 287.964, "mean": 278.708, "std": 4.292, "n": 217}, "3": {"min": 269.097, "q1": 275.225, "median": 277.362, "q3": 279.454, "max": 298.891, "whisker_lo": 269.097, "whisker_hi": 285.486, "mean": 277.78, "std": 4.532, "n": 201}, "4": {"min": 270.68, "q1": 277.408, "median": 279.675, "q3": 282.477, "max": 297.16, "whisker_lo": 270.68, "whisker_hi": 289.201, "mean": 280.036, "std": 4.424, "n": 196}, "5": {"min": 268.837, "q1": 277.011, "median": 279.492, "q3": 281.884, "max": 296.579, "whisker_lo": 269.992, "whisker_hi": 288.057, "mean": 279.993, "std": 4.689, "n": 201}, "6": {"min": 269.112, "q1": 277.661, "median": 280.385, "q3": 282.91, "max": 293.891, "whisker_lo": 271.68, "whisker_hi": 290.494, "mean": 280.698, "std": 4.333, "n": 218}, "7": {"min": 270.601, "q1": 275.801, "median": 278.512, "q3": 280.284, "max": 298.232, "whisker_lo": 270.601, "whisker_hi": 286.526, "mean": 278.436, "std": 4.242, "n": 196}}, "3380P-ATE-2101": {"0": {"min": 270.162, "q1": 276.618, "median": 278.715, "q3": 281.438, "max": 298.059, "whisker_lo": 270.162, "whisker_hi": 287.011, "mean": 279.298, "std": 4.487, "n": 202}, "1": {"min": 266.526, "q1": 274.527, "median": 277.043, "q3": 279.328, "max": 296.082, "whisker_lo": 268.695, "whisker_hi": 284.07, "mean": 277.408, "std": 4.693, "n": 217}, "2": {"min": 269.437, "q1": 275.894, "median": 278.091, "q3": 280.904, "max": 292.006, "whisker_lo": 269.437, "whisker_hi": 288.116, "mean": 278.592, "std": 4.242, "n": 216}, "3": {"min": 270.516, "q1": 276.584, "median": 278.846, "q3": 280.879, "max": 299.597, "whisker_lo": 270.516, "whisker_hi": 286.824, "mean": 279.157, "std": 4.434, "n": 201}, "4": {"min": 270.743, "q1": 276.74, "median": 279.092, "q3": 281.321, "max": 295.61, "whisker_lo": 270.743, "whisker_hi": 287.069, "mean": 279.167, "std": 3.963, "n": 199}, "5": {"min": 269.24, "q1": 276.457, "median": 279.054, "q3": 281.314, "max": 297.654, "whisker_lo": 269.24, "whisker_hi": 288.492, "mean": 279.384, "std": 4.77, "n": 213}, "6": {"min": 268.611, "q1": 275.792, "median": 278.489, "q3": 280.828, "max": 292.136, "whisker_lo": 268.611, "whisker_hi": 288.124, "mean": 278.655, "std": 4.249, "n": 221}, "7": {"min": 270.477, "q1": 275.751, "median": 278.488, "q3": 280.177, "max": 297.606, "whisker_lo": 270.477, "whisker_hi": 286.692, "mean": 278.467, "std": 4.241, "n": 199}}}, "table_rows": [{"site": 0, "3380P-ATE-1003_mean": 279.487, "3380P-ATE-1003_std": 4.814, "3380P-ATE-1003_n": 193, "3380P-ATE-2101_mean": 279.298, "3380P-ATE-2101_std": 4.498, "3380P-ATE-2101_n": 202, "diff": -0.189, "diff_pct": -0.07}, {"site": 1, "3380P-ATE-1003_mean": 277.563, "3380P-ATE-1003_std": 4.561, "3380P-ATE-1003_n": 215, "3380P-ATE-2101_mean": 277.408, "3380P-ATE-2101_std": 4.704, "3380P-ATE-2101_n": 217, "diff": -0.155, "diff_pct": -0.06}, {"site": 2, "3380P-ATE-1003_mean": 278.708, "3380P-ATE-1003_std": 4.302, "3380P-ATE-1003_n": 217, "3380P-ATE-2101_mean": 278.592, "3380P-ATE-2101_std": 4.252, "3380P-ATE-2101_n": 216, "diff": -0.116, "diff_pct": -0.04}, {"site": 3, "3380P-ATE-1003_mean": 277.78, "3380P-ATE-1003_std": 4.543, "3380P-ATE-1003_n": 201, "3380P-ATE-2101_mean": 279.157, "3380P-ATE-2101_std": 4.445, "3380P-ATE-2101_n": 201, "diff": 1.377, "diff_pct": 0.5}, {"site": 4, "3380P-ATE-1003_mean": 280.036, "3380P-ATE-1003_std": 4.435, "3380P-ATE-1003_n": 196, "3380P-ATE-2101_mean": 279.167, "3380P-ATE-2101_std": 3.973, "3380P-ATE-2101_n": 199, "diff": -0.869, "diff_pct": -0.31}, {"site": 5, "3380P-ATE-1003_mean": 279.993, "3380P-ATE-1003_std": 4.7, "3380P-ATE-1003_n": 201, "3380P-ATE-2101_mean": 279.384, "3380P-ATE-2101_std": 4.781, "3380P-ATE-2101_n": 213, "diff": -0.609, "diff_pct": -0.22}, {"site": 6, "3380P-ATE-1003_mean": 280.698, "3380P-ATE-1003_std": 4.343, "3380P-ATE-1003_n": 218, "3380P-ATE-2101_mean": 278.655, "3380P-ATE-2101_std": 4.258, "3380P-ATE-2101_n": 221, "diff": -2.043, "diff_pct": -0.73}, {"site": 7, "3380P-ATE-1003_mean": 278.436, "3380P-ATE-1003_std": 4.253, "3380P-ATE-1003_n": 196, "3380P-ATE-2101_mean": 278.467, "3380P-ATE-2101_std": 4.252, "3380P-ATE-2101_n": 199, "diff": 0.031, "diff_pct": 0.01}], "error_stats": {"mean": -0.322, "std": 0.897, "mae": 0.674, "rmse": 0.953, "max_abs": 2.043, "min_abs": 0.031, "max_site": 6, "min_site": 7}, "overall": {"n": {"3380P-ATE-1003": 1637, "3380P-ATE-2101": 1668}, "mean": {"3380P-ATE-1003": 279.085, "3380P-ATE-2101": 278.755}, "std": {"3380P-ATE-1003": 4.612, "3380P-ATE-2101": 4.44}, "diff": -0.33, "diff_pct": -0.12}, "uniformity": {"3380P-ATE-1003": 1.139, "3380P-ATE-2101": 0.65}, "overall_fail": {"3380P-ATE-1003": {"total": 1637, "failn": 0, "fail_rate_pct": 0.0}, "3380P-ATE-2101": {"total": 1668, "failn": 0, "fail_rate_pct": 0.0}}, "sites_present": [0, 1, 2, 3, 4, 5, 6, 7]}}}
+;
+const TESTERS = RAW.testers;
+const ITEMS = RAW.items;
+const COLORS = {};
+COLORS[TESTERS[0]] = {solid:"#D97B2E", soft:"rgba(217,123,46,0.16)", label:"3380P-ATE-1003"};
+COLORS[TESTERS[1]] = {solid:"#2E63E0", soft:"rgba(46,99,224,0.14)", label:"3380P-ATE-2101"};
+
+const fmt = (v,d=2)=> (v===undefined||v===null||isNaN(v)) ? "\u2014" : Number(v).toFixed(d);
+const fmtPct = (v)=> (v>0? "+":"") + fmt(v,1) + "%";
+
+function safeRun(fn, fallbackId, label){
+  try{ fn(); }
+  catch(e){
+    console.error(label, e);
+    const el = document.getElementById(fallbackId);
+    if(el){ el.innerHTML = '<div style="font-size:12px;color:var(--sub);padding:10px 0;">\u6b64\u5340\u584a\u6e32\u67d3\u6642\u767c\u751f\u554f\u984c\uff08' + (e && e.message ? e.message : e) + '\uff09\u3002</div>'; }
+  }
+}
+
+/* ---------- SVG line/area chart ---------- */
+function drawLineChartSVG(opts){
+  const width = opts.width, height = opts.height;
+  const marginLeft = 42, marginRight = 14, marginTop = 16, marginBottom = 40;
+  const plotW = width - marginLeft - marginRight;
+  const plotH = height - marginTop - marginBottom;
+  const labels = opts.labels;
+  const n = labels.length;
+  const xStep = n>1 ? plotW/(n-1) : plotW;
+  const yMax = opts.yMax;
+  const xAt = i => marginLeft + xStep*i;
+  const yAt = v => marginTop + plotH - (v/yMax)*plotH;
+  let svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="'+height+'" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, Consolas, monospace">';
+  const ySteps = 5;
+  for(let i=0;i<=ySteps;i++){
+    const v = yMax*i/ySteps; const y = yAt(v);
+    svg += '<line x1="'+marginLeft+'" y1="'+y+'" x2="'+(width-marginRight)+'" y2="'+y+'" stroke="#DCE0E6" stroke-width="1" />';
+    svg += '<text x="'+(marginLeft-8)+'" y="'+(y+3)+'" font-size="10" fill="#5B6472" text-anchor="end">'+v.toFixed(0)+'%</text>';
+  }
+  labels.forEach((lb,i)=>{
+    if(i % 2 === 0){
+      svg += '<text x="'+xAt(i)+'" y="'+(height-marginBottom+16)+'" font-size="9.5" fill="#5B6472" text-anchor="middle">'+lb+'</text>';
+    }
+  });
+  svg += '<text x="'+(marginLeft+plotW/2)+'" y="'+(height-6)+'" font-size="10.5" fill="#161B22" text-anchor="middle">'+opts.xTitle+'</text>';
+  opts.series.forEach(function(s){
+    const pts = s.values.map(function(v,i){ return [xAt(i), yAt(v)]; });
+    let areaPath = 'M '+pts[0][0]+' '+yAt(0)+' ';
+    pts.forEach(function(p){ areaPath += 'L '+p[0]+' '+p[1]+' '; });
+    areaPath += 'L '+pts[pts.length-1][0]+' '+yAt(0)+' Z';
+    svg += '<path d="'+areaPath+'" fill="'+s.soft+'" stroke="none" />';
+    let linePath = 'M '+pts.map(function(p){return p[0]+' '+p[1];}).join(' L ');
+    svg += '<path d="'+linePath+'" fill="none" stroke="'+s.solid+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" />';
+    pts.forEach(function(p,i){
+      svg += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="7" fill="transparent"><title>'+s.label+' \u00b7 '+labels[i]+': '+s.values[i].toFixed(2)+'%</title></circle>';
+      svg += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.2" fill="'+s.solid+'" />';
+    });
+  });
+  svg += '</svg>';
+  return svg;
+}
+
+/* ---------- SVG box plot ---------- */
+function drawBoxSVG(cfg){
+  const width = cfg.width, height = cfg.height;
+  const marginLeft = cfg.marginLeft || 40, marginRight = cfg.marginRight || 10;
+  const marginTop = cfg.marginTop || 10, marginBottom = cfg.marginBottom || 26;
+  const plotW = width - marginLeft - marginRight;
+  const plotH = height - marginTop - marginBottom;
+  const yMax = cfg.yMax, yMin = cfg.yMin || 0;
+  const yScale = v => marginTop + plotH - ((v-yMin)/(yMax-yMin))*plotH;
+  const groups = cfg.groups;
+  const n = groups.length;
+  const slot = plotW/n;
+  const boxW = Math.min(34, slot*0.5);
+  let svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="'+height+'" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, Consolas, monospace">';
+  if(cfg.showAxis){
+    const steps = 5;
+    for(let i=0;i<=steps;i++){
+      const v = yMin+(yMax-yMin)*i/steps; const y = yScale(v);
+      svg += '<line x1="'+marginLeft+'" y1="'+y+'" x2="'+(width-marginRight)+'" y2="'+y+'" stroke="#DCE0E6" stroke-width="1" />';
+      svg += '<text x="'+(marginLeft-6)+'" y="'+(y+3)+'" font-size="9.5" fill="#5B6472" text-anchor="end">'+Math.round(v)+'</text>';
+    }
+  }
+  if(cfg.specBand){
+    const yLo = yScale(cfg.specBand.lower), yHi = yScale(cfg.specBand.upper);
+    svg += '<rect x="'+marginLeft+'" y="'+yHi+'" width="'+plotW+'" height="'+Math.max(0,yLo-yHi)+'" fill="#188A5C" fill-opacity="0.06" />';
+    svg += '<line x1="'+marginLeft+'" y1="'+yLo+'" x2="'+(width-marginRight)+'" y2="'+yLo+'" stroke="#188A5C" stroke-width="1" stroke-dasharray="3,3" />';
+    svg += '<line x1="'+marginLeft+'" y1="'+yHi+'" x2="'+(width-marginRight)+'" y2="'+yHi+'" stroke="#188A5C" stroke-width="1" stroke-dasharray="3,3" />';
+  }
+  groups.forEach(function(gr,i){
+    const cx = marginLeft + slot*i + slot/2;
+    const c = COLORS[gr.key].solid;
+    const s = gr.stats;
+    if(!s){ return; }
+    svg += '<line x1="'+cx+'" y1="'+yScale(s.whisker_lo)+'" x2="'+cx+'" y2="'+yScale(s.whisker_hi)+'" stroke="'+c+'" stroke-width="1.4"/>';
+    svg += '<line x1="'+(cx-boxW*0.28)+'" y1="'+yScale(s.whisker_lo)+'" x2="'+(cx+boxW*0.28)+'" y2="'+yScale(s.whisker_lo)+'" stroke="'+c+'" stroke-width="1.4"/>';
+    svg += '<line x1="'+(cx-boxW*0.28)+'" y1="'+yScale(s.whisker_hi)+'" x2="'+(cx+boxW*0.28)+'" y2="'+yScale(s.whisker_hi)+'" stroke="'+c+'" stroke-width="1.4"/>';
+    const yTop = yScale(s.q3), yBot = yScale(s.q1);
+    svg += '<rect x="'+(cx-boxW/2)+'" y="'+yTop+'" width="'+boxW+'" height="'+Math.max(1,yBot-yTop)+'" fill="'+c+'" fill-opacity="0.22" stroke="'+c+'" stroke-width="1.6"><title>'+COLORS[gr.key].label+' \u00b7 median '+s.median.toFixed(2)+' \u00b7 Q1 '+s.q1.toFixed(2)+' \u00b7 Q3 '+s.q3.toFixed(2)+'</title></rect>';
+    svg += '<line x1="'+(cx-boxW/2)+'" y1="'+yScale(s.median)+'" x2="'+(cx+boxW/2)+'" y2="'+yScale(s.median)+'" stroke="'+c+'" stroke-width="2.2"/>';
+    const my = yScale(s.mean);
+    svg += '<path d="M '+cx+' '+(my-4)+' L '+(cx+4)+' '+my+' L '+cx+' '+(my+4)+' L '+(cx-4)+' '+my+' Z" fill="#FFFFFF" stroke="'+c+'" stroke-width="1.4"><title>'+COLORS[gr.key].label+' mean '+s.mean.toFixed(2)+'</title></path>';
+  });
+  svg += '</svg>';
+  return svg;
+}
+
+/* ---------- Overview strip (3 item diff cards) ---------- */
+safeRun(function(){
+  const strip = document.getElementById("overviewStrip");
+  const order = ["DIR0_9","IR0_8","VF1"];
+  order.forEach(key=>{
+    const d = ITEMS[key];
+    const cell = document.createElement("div");
+    cell.className = "ov-cell";
+    const isBig = Math.abs(d.overall.diff_pct) >= 10;
+    cell.innerHTML =
+      '<div class="lbl">'+d.label+' \u5dee\u7570\uff082101 \u2212 1003\uff09</div>' +
+      '<div class="diffval'+(isBig?' big':'')+'">'+fmtPct(d.overall.diff_pct)+'</div>' +
+      '<div class="sub">'+fmt(d.overall.diff)+' '+d.unit+'\u00a0\u00b7\u00a0'+fmt(d.overall.mean[TESTERS[0]])+' \u2192 '+fmt(d.overall.mean[TESTERS[1]])+' '+d.unit+'</div>';
+    strip.appendChild(cell);
+  });
+}, "overviewStrip", "overview-strip");
+
+safeRun(function(){
+  const el = document.getElementById("mcSampleN");
+  const n0 = ITEMS.DIR0_9.overall.n[TESTERS[0]], n1 = ITEMS.DIR0_9.overall.n[TESTERS[1]];
+  el.textContent = "3380P-ATE-1003: n="+n0.toLocaleString()+"\uff0f3380P-ATE-2101: n="+n1.toLocaleString();
+}, "mcSampleN", "methodology-n");
+
+/* ---------- Build one item's full section set ---------- */
+function buildItemSections(container, key, d){
+  const p = key; // id prefix
+  const wrap = document.createElement("div");
+  wrap.innerHTML =
+    '<section class="item-divider">' +
+      '<p class="kicker" style="margin-top:0;">LLD \u6e2c\u8a66\u8cc7\u6599\u5206\u6790\u5831\u544a\u3000<span class="mono">'+d.label+' \u00b7 '+d.unit+'</span></p>' +
+      '<h2 class="item-title">'+d.label+' \u6a5f\u53f0\u5dee\u7570\u6bd4\u8f03</h2>' +
+      '<p class="sec-note" style="max-width:680px;">\u898f\u683c\u7bc4\u570d '+d.spec.lower+'\u2013'+d.spec.upper+' '+d.unit+'\uff0c\u5169\u6a5f\u53f0\u76f8\u540c\u3002</p>' +
+      '<div class="stat-strip" id="'+p+'-heroStrip"></div>' +
+    '</section>' +
+    '<section id="'+p+'-histogram">' +
+      '<div class="sec-head"><h2>\u6574\u9ad4\u5206\u4f48\uff1a\u76f4\u65b9\u5716</h2><span class="basis-tag pass-only"><span class="dot2"></span>\u5168\u90e8\u91cf\u6e2c\u503c\uff08\u7121 Fail\uff09</span></div>' +
+      '<span class="n-tag" id="'+p+'-histN"></span>' +
+      '<p class="sec-note">\u5404\u6a5f\u53f0\u91cf\u6e2c\u503c\u4ee5\u5340\u9593\u7d71\u8a08\u4f54\u7e3d\u6a23\u672c\u6578\u767e\u5206\u6bd4\u3002</p>' +
+      '<div class="panel"><div class="hist-svg-wrap" id="'+p+'-histSvg"></div></div>' +
+    '</section>' +
+    '<section id="'+p+'-boxplot-overall">' +
+      '<div class="sec-head"><h2>\u6574\u9ad4\u5206\u4f48\uff1a\u7b26\u578b\u5716</h2></div>' +
+      '<p class="sec-note">\u7da0\u8272\u9670\u5f71\u5e36\u70ba\u898f\u683c\u7bc4\u570d\uff1b\u83f1\u5f62\u70ba\u5e73\u5747\u503c\u3002</p>' +
+      '<div class="panel"><div class="box-overall-wrap"><div class="box-overall-svg" id="'+p+'-boxSvg"></div><div class="box-overall-legend" id="'+p+'-boxLegend"></div></div></div>' +
+    '</section>' +
+    '<section id="'+p+'-site-table">' +
+      '<div class="sec-head"><h2>\u5404 Site# \u7d71\u8a08\u8207\u5dee\u7570</h2></div>' +
+      '<p class="sec-note">Diff = 3380P-ATE-2101 \u2212 3380P-ATE-1003\u3002<span style="color:var(--bad)">\u7d05\u5b57</span>\u8868\u793a\u4e0a\u5347\uff0c<span style="color:var(--good)">\u7da0\u5b57</span>\u8868\u793a\u4e0b\u964d\u3002</p>' +
+      '<div class="panel table-scroll"><table id="'+p+'-siteTable"></table></div>' +
+    '</section>' +
+    '<section id="'+p+'-boxplot-site">' +
+      '<div class="sec-head"><h2>\u5404 Site# \u5206\u4f48\uff1a\u7b26\u578b\u5716</h2></div>' +
+      '<p class="sec-note">\u6bcf\u683c\u70ba\u4e00\u500b Site\uff0c\u5de6\u53f3\u5206\u5225\u70ba 3380P-ATE-1003 / 3380P-ATE-2101\u3002</p>' +
+      '<div class="site-grid" id="'+p+'-siteBoxGrid"></div>' +
+    '</section>' +
+    '<section id="'+p+'-error-stats">' +
+      '<div class="sec-head"><h2>\u8aa4\u5dee\u503c\u7d71\u8a08\uff08\u8de8 Site \u5dee\u7570\u5206\u5e03\uff09</h2></div>' +
+      '<p class="sec-note">\u4ee5\u5404 Site \u5e73\u5747\u503c\u5dee\u7570\u70ba\u6a23\u672c\u7684\u8aa4\u5dee\u7d71\u8a08\u6307\u6a19\u3002</p>' +
+      '<div class="err-grid" id="'+p+'-errGrid"></div>' +
+    '</section>' +
+    '<section id="'+p+'-findings">' +
+      '<div class="sec-head"><h2>\u91cd\u9ede\u7d50\u8ad6</h2></div>' +
+      '<div class="findings" id="'+p+'-findingsList"></div>' +
+    '</section>';
+  container.appendChild(wrap);
+
+  safeRun(function(){
+    const strip = document.getElementById(p+"-heroStrip");
+    TESTERS.forEach(t=>{
+      const c = COLORS[t];
+      const cell = document.createElement("div");
+      cell.className = "stat-cell";
+      cell.style.borderTop = "3px solid "+c.solid;
+      cell.innerHTML = '<div class="lbl"><span class="dot" style="background:'+c.solid+'"></span>'+c.label+'</div>' +
+        '<div class="val">'+fmt(d.overall.mean[t])+'<span class="unit">'+d.unit+'</span></div>' +
+        '<div class="sub">&sigma; = '+fmt(d.overall.std[t])+' '+d.unit+'\u00a0\u00b7\u00a0n = '+d.overall.n[t].toLocaleString()+'</div>';
+      strip.appendChild(cell);
+    });
+  }, p+"-heroStrip", p+"-hero");
+
+  safeRun(function(){
+    document.getElementById(p+"-histN").textContent = "n(1003)="+d.overall.n[TESTERS[0]].toLocaleString()+" \u00b7 n(2101)="+d.overall.n[TESTERS[1]].toLocaleString();
+    let maxPct=0;
+    TESTERS.forEach(t=>{ d.hist_data[t].forEach(v=>{ if(v>maxPct) maxPct=v; }); });
+    const yMax = Math.ceil((maxPct*1.15)/5)*5;
+    const series = TESTERS.map(t=>({label:COLORS[t].label, solid:COLORS[t].solid, soft:COLORS[t].soft, values:d.hist_data[t]}));
+    const svg = drawLineChartSVG({width:960,height:340,labels:d.bin_labels,series:series,yMax:yMax, xTitle: d.label+" \u5340\u9593 ("+d.unit+")"});
+    document.getElementById(p+"-histSvg").innerHTML = svg;
+  }, p+"-histSvg", p+"-hist");
+
+  safeRun(function(){
+    const groups = TESTERS.map(t=>({key:t, stats:d.overall_box[t]}));
+    const pad = (d.spec.upper-d.spec.lower)*0.35;
+    const yMin = Math.max(0, Math.floor((d.spec.lower-pad)/2)*2);
+    const yMax = Math.ceil((d.spec.upper+pad)/2)*2;
+    const svg = drawBoxSVG({width:340,height:300,groups:groups,yMin:yMin,yMax:yMax,showAxis:true,specBand:d.spec});
+    document.getElementById(p+"-boxSvg").innerHTML = svg;
+    const legend = document.getElementById(p+"-boxLegend");
+    TESTERS.forEach(t=>{
+      const s = d.overall_box[t]; const c = COLORS[t];
+      const row = document.createElement("div"); row.className="row";
+      row.innerHTML = '<span class="sw" style="background:'+c.solid+'"></span><div><div class="name">'+c.label+'</div>' +
+        '<div class="figs">median '+fmt(s.median)+' \u00b7 Q1\u2013Q3 '+fmt(s.q1)+'\u2013'+fmt(s.q3)+' \u00b7 mean '+fmt(s.mean)+' \u00b7 n '+s.n.toLocaleString()+'</div></div>';
+      legend.appendChild(row);
+    });
+  }, p+"-boxSvg", p+"-box-overall");
+
+  safeRun(function(){
+    const grid = document.getElementById(p+"-siteBoxGrid");
+    const pad = (d.spec.upper-d.spec.lower)*0.35;
+    const yMin = Math.max(0, Math.floor((d.spec.lower-pad)/2)*2);
+    const yMax = Math.ceil((d.spec.upper+pad)/2)*2;
+    d.sites_present.forEach(function(site){
+      const groups = TESTERS.map(t=>({key:t, stats: d.site_box[t][site]}));
+      const svg = drawBoxSVG({width:230,height:190,marginLeft:30,marginBottom:18,groups:groups,yMin:yMin,yMax:yMax,showAxis:true,specBand:d.spec});
+      const panel = document.createElement("div"); panel.className="site-panel";
+      const m0 = d.site_box[TESTERS[0]][site] ? d.site_box[TESTERS[0]][site].mean : null;
+      const m1 = d.site_box[TESTERS[1]][site] ? d.site_box[TESTERS[1]][site].mean : null;
+      panel.innerHTML = '<div class="site-title">Site '+site+'</div><div class="site-sub">1003 '+fmt(m0)+' &rarr; 2101 '+fmt(m1)+' '+d.unit+'</div>'+svg;
+      grid.appendChild(panel);
+    });
+  }, p+"-siteBoxGrid", p+"-site-box");
+
+  safeRun(function(){
+    const table = document.getElementById(p+"-siteTable");
+    let thead = '<thead><tr><th rowspan="2">Site#</th><th colspan="2" class="group-head">3380P-ATE-1003</th><th colspan="2" class="group-head">3380P-ATE-2101</th><th colspan="1" class="group-head">Diff (%)</th></tr>' +
+      '<tr><th class="mono">Mean</th><th class="mono">Std</th><th class="mono">Mean</th><th class="mono">Std</th><th class="mono">2101&minus;1003</th></tr></thead>';
+    let tbody = "<tbody>";
+    d.table_rows.forEach(function(r){
+      const cls = r.diff>0 ? "pos" : (r.diff<0 ? "neg" : "");
+      tbody += '<tr><td>Site '+r.site+'</td>' +
+        '<td class="mono">'+fmt(r[TESTERS[0]+"_mean"])+'</td><td class="mono">'+fmt(r[TESTERS[0]+"_std"])+'</td>' +
+        '<td class="mono">'+fmt(r[TESTERS[1]+"_mean"])+'</td><td class="mono">'+fmt(r[TESTERS[1]+"_std"])+'</td>' +
+        '<td class="mono '+cls+'">'+fmt(r.diff)+' ('+fmtPct(r.diff_pct)+')</td></tr>';
+    });
+    tbody += "</tbody>";
+    table.innerHTML = thead+tbody;
+  }, p+"-siteTable", p+"-site-table");
+
+  safeRun(function(){
+    const grid = document.getElementById(p+"-errGrid");
+    const s = d.error_stats;
+    const cards = [
+      {k:"\u5e73\u5747\u5dee\u7570 (Mean Diff)", v:fmt(s.mean)+" "+d.unit},
+      {k:"\u6a19\u6e96\u5dee (Site-to-Site Std)", v:fmt(s.std)+" "+d.unit},
+      {k:"MAE", v:fmt(s.mae)+" "+d.unit},
+      {k:"RMSE", v:fmt(s.rmse)+" "+d.unit},
+      {k:"\u6700\u5927\u7d55\u5c0d\u5dee\u7570", v:fmt(s.max_abs)+" "+d.unit+" (Site "+s.max_site+")"},
+      {k:"\u6700\u5c0f\u7d55\u5c0d\u5dee\u7570", v:fmt(s.min_abs)+" "+d.unit+" (Site "+s.min_site+")"},
+    ];
+    const card = document.createElement("div"); card.className="err-card";
+    let rows = "";
+    cards.forEach(c=>{ rows += '<div>'+c.k+'<span class="v">'+c.v+'</span></div>'; });
+    card.innerHTML = '<div class="k" style="font-size:13.5px;font-weight:600;color:var(--ink);">\u8de8 Site \u5dee\u7570\u6307\u6a19</div><div class="rows">'+rows+'</div>';
+    grid.appendChild(card);
+
+    const uCard = document.createElement("div"); uCard.className="err-card";
+    uCard.innerHTML = '<div class="k" style="font-size:13.5px;font-weight:600;color:var(--ink);">Site \u9593\u5747\u5300\u5ea6\uff08\u5404 Site \u5e73\u5747\u503c\u7684\u6a19\u6e96\u5dee\uff09</div><div class="rows">' +
+      '<div>3380P-ATE-1003<span class="v">'+fmt(d.uniformity[TESTERS[0]])+' '+d.unit+'</span></div>' +
+      '<div>3380P-ATE-2101<span class="v">'+fmt(d.uniformity[TESTERS[1]])+' '+d.unit+'</span></div></div>';
+    grid.appendChild(uCard);
+
+    const oCard = document.createElement("div"); oCard.className="err-card";
+    oCard.innerHTML = '<div class="k" style="font-size:13.5px;font-weight:600;color:var(--ink);">\u6574\u9ad4\u5dee\u7570</div><div class="rows">' +
+      '<div>Mean (1003 &rarr; 2101)<span class="v">'+fmt(d.overall.mean[TESTERS[0]])+' &rarr; '+fmt(d.overall.mean[TESTERS[1]])+'</span></div>' +
+      '<div>\u8b8a\u5316\u91cf<span class="v">'+fmt(d.overall.diff)+' '+d.unit+' ('+fmtPct(d.overall.diff_pct)+')</span></div></div>';
+    grid.appendChild(oCard);
+  }, p+"-errGrid", p+"-error-stats");
+}
+
+safeRun(function(){
+  const container = document.getElementById("itemsContainer");
+  buildItemSections(container, "dir0", ITEMS.DIR0_9);
+  buildItemSections(container, "ir0", ITEMS.IR0_8);
+  buildItemSections(container, "vf1", ITEMS.VF1);
+}, "itemsContainer", "items-container");
+
+/* ---------- Per-item findings text ---------- */
+safeRun(function(){
+  const d = ITEMS.DIR0_9;
+  const list = document.getElementById("dir0-findingsList");
+  const items = [
+    "<b>DIR0(9) \u662f\u4e09\u9805\u4e2d\u6a5f\u53f0\u5dee\u7570\u6700\u5927\u7684\u6e2c\u9805</b>\uff1a3380P-ATE-1003 \u5e73\u5747 "+fmt(d.overall.mean[TESTERS[0]])+" nA\uff0c3380P-ATE-2101 \u5747\u5f5e\u964d\u81f3 "+fmt(d.overall.mean[TESTERS[1]])+" nA\uff0c\u4e0b\u964d\u5e45\u5ea6\u9054 "+fmtPct(d.overall.diff_pct)+"\u3002\u540c\u4e00\u6279\u6676\u5713\u5728\u5169\u53f0\u6a5f\u53f0\u4e0a\u6e2c\u5230\u5982\u6b64\u5927\u7684\u5dee\u7570\uff0c\u8207\u4e4b\u524d Gen1\uff08\u5c0d\u61c9 1003 \u7cfb\u7d71\uff09\u8207 Gen2\uff08\u5c0d\u61c9 2101 \u7cfb\u7d71\uff09\u7684\u6bd4\u8f03\u7d50\u679c\u8da8\u52e2\u4e00\u81f4\uff0c\u9032\u4e00\u6b65\u4f9d\u64da\u652f\u6301\u300cDIR0(9) \u7684\u5dee\u7570\u4e3b\u8981\u4f86\u81ea\u65bc\u6a5f\u53f0/\u7a0b\u5f0f\u672c\u8eab\u300d\u7684\u63a8\u8ad6\u3002",
+    "<b>\u5747\u5300\u5ea6\u4e5f\u5927\u5e45\u6539\u5584</b>\uff1aSite \u9593\u6a19\u6e96\u5dee\u5f9e 1003 \u7684 "+fmt(d.uniformity[TESTERS[0]])+" nA \u6536\u655b\u5230 2101 \u7684 "+fmt(d.uniformity[TESTERS[1]])+" nA\uff0c\u8207\u524d\u9762 Gen1/Gen2 \u5206\u6790\u4e2d\u300cGen2 \u5747\u5300\u5ea6\u6700\u4f73\u300d\u7684\u7d50\u8ad6\u5b8c\u5168\u5406\u5408\u3002",
+    "<b>\u9700\u9032\u4e00\u6b65\u78ba\u8a8d\u662f\u6a5f\u53f0\u672c\u8eab\u6216\u6e2c\u8a66\u689d\u4ef6\u5dee\u7570</b>\uff1a\u7531\u65bc\u672c\u6b21\u6bd4\u8f03\u662f\u540c\u6279\u6676\u5713\u3001\u540c\u898f\u683c\uff0c\u53ea\u6362\u6a5f\u53f0\u6e2c\u8a66\uff0c\u56e0\u6b64\u53ef\u4ee5\u6392\u9664\u88fd\u7a0b\u6279\u6b21\u5dee\u7570\u7684\u5f71\u97ff\uff0c\u5efa\u8b70\u512a\u5148\u6aa2\u67e5\u5169\u53f0\u6a5f\u53f0\u5728 DIR0(9) \u76f8\u95dc\u91cf\u6e2c\u689d\u4ef6\uff08\u4f8b\u5982\u514d\u6f6e\u6642\u9593\u3001\u63a5\u89f8\u963b\u6297\u3001\u6e2c\u8a66\u9ede\u8a2d\u5b9a\uff09\u662f\u5426\u4e00\u81f4\u3002"
+  ];
+  items.forEach(function(t,i){
+    const row = document.createElement("div"); row.className="finding";
+    row.innerHTML = '<div class="num">'+String(i+1).padStart(2,'0')+'</div><div class="txt">'+t+'</div>';
+    list.appendChild(row);
+  });
+}, "dir0-findingsList", "dir0-findings-text");
+
+safeRun(function(){
+  const d = ITEMS.IR0_8;
+  const list = document.getElementById("ir0-findingsList");
+  const items = [
+    "<b>IR0(8) \u5169\u6a5f\u53f0\u975e\u5e38\u63a5\u8fd1</b>\uff1a3380P-ATE-1003 \u5e73\u5747 "+fmt(d.overall.mean[TESTERS[0]])+" &micro;A\uff0c3380P-ATE-2101 \u5e73\u5747 "+fmt(d.overall.mean[TESTERS[1]])+" &micro;A\uff0c\u5dee\u7570\u50c5 "+fmtPct(d.overall.diff_pct)+"\uff0c\u5169\u6a5f\u53f0\u5728\u6b64\u6e2c\u9805\u4e0a\u4e00\u81f4\u6027\u826f\u597d\u3002",
+    "<b>Site \u9593\u5747\u5300\u5ea6\u5169\u6a5f\u53f0\u4e5f\u90fd\u5f88\u63a5\u8fd1</b>\uff1a1003 \u70ba "+fmt(d.uniformity[TESTERS[0]])+" &micro;A\uff0c2101 \u70ba "+fmt(d.uniformity[TESTERS[1]])+" &micro;A\uff0c\u8207 DIR0(9) \u4e0a\u5169\u6a5f\u53f0\u5dee\u7570\u9078\u661b\u5f62\u6210\u5c0d\u6bd4\uff0c\u9032\u4e00\u6b65\u8aaa\u660e IR0(8) \u672c\u8eab\u5c0d\u6a5f\u53f0\u5dee\u7570\u4e0d\u654f\u611f\u3002"
+  ];
+  items.forEach(function(t,i){
+    const row = document.createElement("div"); row.className="finding";
+    row.innerHTML = '<div class="num">'+String(i+1).padStart(2,'0')+'</div><div class="txt">'+t+'</div>';
+    list.appendChild(row);
+  });
+}, "ir0-findingsList", "ir0-findings-text");
+
+safeRun(function(){
+  const d = ITEMS.VF1;
+  const list = document.getElementById("vf1-findingsList");
+  const items = [
+    "<b>VF1(14) \u5169\u6a5f\u53f0\u4e5f\u76f8\u7576\u4e00\u81f4</b>\uff1a3380P-ATE-1003 \u5e73\u5747 "+fmt(d.overall.mean[TESTERS[0]])+" mV\uff0c3380P-ATE-2101 \u5e73\u5747 "+fmt(d.overall.mean[TESTERS[1]])+" mV\uff0c\u5dee\u7570\u50c5 "+fmtPct(d.overall.diff_pct)+"\uff0c\u9060\u5c0f\u65bc DIR0(9) \u7684\u6a5f\u53f0\u5dee\u7570\u3002",
+    "<b>Site \u9593\u5747\u5300\u5ea6\u4e5f\u5169\u6a5f\u53f0\u63a5\u8fd1</b>\uff1a1003 \u70ba "+fmt(d.uniformity[TESTERS[0]])+" mV\uff0c2101 \u70ba "+fmt(d.uniformity[TESTERS[1]])+" mV\u3002"
+  ];
+  items.forEach(function(t,i){
+    const row = document.createElement("div"); row.className="finding";
+    row.innerHTML = '<div class="num">'+String(i+1).padStart(2,'0')+'</div><div class="txt">'+t+'</div>';
+    list.appendChild(row);
+  });
+}, "vf1-findingsList", "vf1-findings-text");
+
+/* ---------- Overall combined findings ---------- */
+safeRun(function(){
+  const list = document.getElementById("overallFindingsList");
+  const dDir0 = ITEMS.DIR0_9, dIr0 = ITEMS.IR0_8, dVf1 = ITEMS.VF1;
+  const items = [
+    "<b>\u4e09\u9805\u6e2c\u9805\u8868\u73fe\u4e0d\u4e00\u81f4\uff0c\u5dee\u7570\u96c6\u4e2d\u5728 DIR0(9)</b>\uff1a\u5169\u6a5f\u53f0\u5728 IR0(8)\uff08"+fmtPct(dIr0.overall.diff_pct)+"\uff09\u8207 VF1(14)\uff08"+fmtPct(dVf1.overall.diff_pct)+"\uff09\u4e0a\u5e7e\u4e4e\u6c92\u6709\u5dee\u7570\uff0c\u552f\u72ec DIR0(9) \u5b58\u5728\u9ad4\u7cfb\u6027\u5927\u5e45\u5dee\u7570\uff08"+fmtPct(dDir0.overall.diff_pct)+"\uff09\uff0c\u986f\u793a\u554f\u984c\u4e0d\u5728\u65bc\u6a5f\u53f0\u6574\u9ad4\u7cbe\u5ea6\uff0c\u800c\u662f DIR0(9) \u9019\u9805\u7279\u5b9a\u91cf\u6e2c\u689d\u4ef6\u5728\u5169\u53f0\u6a5f\u53f0\u4e0a\u4e0d\u4e00\u81f4\u3002",
+    "<b>\u8207\u4e4b\u524d Gen1/Gen2 \u5831\u544a\u4e92\u76f8\u5370\u8b49</b>\uff1a\u6a5f\u53f0\u540d\u7a31 3380P-ATE-1003 \u8207 3380P-ATE-2101 \u6070\u597d\u5c0d\u61c9\u4e4b\u524d Gen1_1003 \u8207 Gen2_2101 \u4e24\u7d44\u8cc7\u6599\u6240\u4f7f\u7528\u7684\u6a5f\u53f0\uff0c\u800c\u4e14\u540c\u6a23\u662f DIR0(9) \u5dee\u7570\u6700\u5927\u3001IR0(8)/VF1 \u5dee\u7570\u6975\u5c0f\u7684\u8da8\u52e2\uff0c\u4e24\u6b21\u5206\u6790\u76f8\u4e92\u4ea4\u53c9\u9a57\u8b49\uff0c\u5927\u5e45\u63d0\u9ad8\u300cDIR0(9) \u5dee\u7570\u4e3b\u8981\u4f86\u81ea\u6a5f\u53f0/\u7a0b\u5f0f\u5dee\u7570\u800c\u975e\u88fd\u7a0b\u6f02\u79fb\u300d\u7684\u53ef\u4fe1\u5ea6\u3002",
+    "<b>\u5efa\u8b70\u5f8c\u7e8c\u884c\u52d5</b>\uff1a\u512a\u5148\u6392\u67e5\u5169\u53f0\u6a5f\u53f0\u5728 DIR0(9) \u6e2c\u8a66\u9032\u884c\u66f4\u65b0\u6642\u7684\u91cf\u6e2c\u57fa\u6e96\u3001\u63a5\u89f8\u5340\u57df\u6216\u63a5\u7dda\u962e\u6297\u662f\u5426\u4e00\u81f4\uff0c\u5e26\u4f86\u7684\u6f0f\u96fb\u6d41\u91cf\u6e2c\u8aa4\u5dee\uff1b\u7531\u65bc IR0(8) \u8207 VF1 \u5169\u6a5f\u53f0\u9ad4\u73fe\u826f\u597d\u4e00\u81f4\u6027\uff0c\u53ef\u4f5c\u70ba\u6a5f\u53f0\u57fa\u790e\u91cf\u6e2c\u80fd\u529b\u7686\u6b63\u5e38\u7684\u53c3\u8003\u57fa\u6e96\u3002"
+  ];
+  items.forEach(function(t,i){
+    const row = document.createElement("div"); row.className="finding";
+    row.innerHTML = '<div class="num">'+String(i+1).padStart(2,'0')+'</div><div class="txt">'+t+'</div>';
+    list.appendChild(row);
+  });
+}, "overallFindingsList", "overall-findings-text");
+</script>
+</body>
+</html>
