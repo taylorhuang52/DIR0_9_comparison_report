@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>3380P-ATE-1003 CP/WAT Yield Gap 分析</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#1c2430;--mu:#5d6b7c;--ac:#d9363e;--ok:#1f9d63;--bl:#2b5fd9;--bd:#dde2e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mu:#94a3b5;--ac:#ff6b73;--ok:#43c88a;--bl:#7ba2ff;--bd:#2c3744}}
+:root[data-theme="dark"]{--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mu:#94a3b5;--ac:#ff6b73;--ok:#43c88a;--bl:#7ba2ff;--bd:#2c3744}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;overflow:hidden}
+.deck{height:100%;position:relative}
+.slide{position:absolute;inset:0;padding:4vh 6vw 9vh;display:none;flex-direction:column;overflow-y:auto}
+.slide.on{display:flex}
+h1{font-size:clamp(26px,4.2vw,50px);margin:.2em 0}
+h2{font-size:clamp(22px,3vw,36px);margin:0 0 .5em;border-left:6px solid var(--ac);padding-left:.5em}
+p,li{font-size:clamp(15px,1.7vw,21px);line-height:1.6}
+.mu{color:var(--mu)}.ac{color:var(--ac);font-weight:700}.ok{color:var(--ok);font-weight:700}
+ul{padding-left:1.2em;margin:.3em 0}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px 20px}
+.big{font-size:clamp(28px,4vw,46px);font-weight:800}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:clamp(13px,1.5vw,18px)}
+th,td{border:1px solid var(--bd);padding:8px 12px;text-align:center}
+th{background:var(--bg)}
+.tl{border-left:3px solid var(--bd);margin-left:8px;padding-left:18px}
+.tl div{position:relative;margin:0 0 12px;font-size:clamp(14px,1.6vw,19px);line-height:1.5}
+.tl div:before{content:"";position:absolute;left:-26px;top:.45em;width:11px;height:11px;border-radius:50%;background:var(--bl)}
+.tl .r:before{background:var(--ac)}.tl .g:before{background:var(--ok)}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;align-items:center;gap:14px;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.nav button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:6px 16px;font-size:16px;cursor:pointer}
+#cnt{color:var(--mu);font-size:14px;min-width:60px;text-align:center}
+svg text{fill:var(--mu);font-size:11px}
+</style></head><body>
+<div class="deck">
+
+<section class="slide on">
+<p class="mu">CP / WAT Yield Gap 異常分析 · 2026-08-30 ~ 09-17</p>
+<h1>3380P-ATE-1003 的 gap 擴大，主因是 DIR0 fail 增加</h1>
+<div class="grid" style="margin-top:2vh">
+<div class="card"><div class="mu">50A550mV gap</div><div class="big"><span class="ok">2.7</span> → <span class="ac">7.3</span> → <span class="ok">2.8</span></div><div class="mu">事件前 / 異常期 / 9/17 後</div></div>
+<div class="card"><div class="mu">50A550mV DIR0 fail</div><div class="big"><span class="ok">1.5%</span> → <span class="ac">5.8%</span> → <span class="ok">1.1%</span></div><div class="mu">單批最高 10~11%</div></div>
+<div class="card"><div class="mu">起訖時間</div><div class="big" style="font-size:clamp(20px,2.6vw,30px)">9/4 19:38 ~ 9/17 中午</div><div class="mu">與 9/7、9/21 事件日期不吻合</div></div>
+</div>
+</section>
+
+<section class="slide">
+<h2>現象：只有 1003 異常，WAT 沒有變</h2>
+<div class="tw"><table>
+<tr><th>Device</th><th>期間</th><th>批數</th><th>WAT</th><th>CP</th><th>Gap</th><th>DIR0 %</th></tr>
+<tr><td rowspan="3">50A550mV</td><td>事件前</td><td>78</td><td>98.5</td><td>95.8</td><td>2.68</td><td>1.54</td></tr>
+<tr><td>異常期</td><td>113</td><td>97.2</td><td>89.8</td><td class="ac">6.74</td><td class="ac">5.38</td></tr>
+<tr><td>9/17 後</td><td>77</td><td>98.6</td><td>95.8</td><td>2.78</td><td>1.09</td></tr>
+<tr><td rowspan="3">35A570mV</td><td>事件前</td><td>123</td><td>98.5</td><td>97.4</td><td>1.14</td><td>1.46</td></tr>
+<tr><td>異常期</td><td>15</td><td>99.4</td><td>92.8</td><td class="ac">6.59</td><td class="ac">5.63</td></tr>
+<tr><td>9/17 後</td><td>27</td><td>98.8</td><td>96.3</td><td>2.53</td><td>1.89</td></tr>
+</table></div>
+<ul><li>同期 3380P-ATE-2101 測 50A550mV：gap 約 1.0~1.6，DIR0 約 1%，三個時期都沒變。</li>
+<li>WAT yield 沒掉，與 DIR0 相關係數 ≈ 0；EPI 兩家 DIR0 相近（環球晶 5.2%、艾德康 5.5%）→ <b>不是 wafer 問題</b>。</li></ul>
+</section>
+
+<section class="slide">
+<h2>主因：50A550mV 在 1003 的每日 DIR0 fail 率</h2>
+<div id="chart" style="width:100%;max-width:1000px"></div>
+<p class="mu" style="margin-top:6px">9/4 起跳升至 4~6%，9/16 衝到 10.9%，9/17 中午後回到 1% 左右（9/21 前後無階梯變化）。</p>
+</section>
+
+<section class="slide">
+<h2>次因：9/4 19:38 起 IR0 / IR2_1 測試流程變動</h2>
+<ul>
+<li>此刻起 IR0(8) bin 由 0 變成 1~3%，IR2_1(14) 由約 0.7~0.9% 變成 0，推測 IR2_1 被改歸到 IR0。</li>
+<li>9/5 18:56 ~ 9/7 10:26 流程一度退回 IR2_1，DIR0 仍有 3.8%；9/7 12:15 重新回到 IR0 流程，DIR0 4.5~5.8%。</li>
+<li>9/17 後 DIR0 已正常但 IR0 仍 1.4%：此搬移淨影響僅約 <b>+0.5%</b>。</li>
+<li>AEC-Q 損失（DPAT / GDBC）由 0.2% 升到 1.4%，應為 DIR0 偏離的連動，待確認。</li>
+</ul>
+<div class="tw"><table>
+<tr><th>50A550mV @1003</th><th>IR0 %</th><th>IR2_1 %</th><th>DIR0 %</th><th>AEC-Q %</th></tr>
+<tr><td>事件前</td><td>0</td><td>0.92</td><td>1.54</td><td>0.23</td></tr>
+<tr><td>9/7 ~ 9/17 上午</td><td>2.26</td><td>0.02</td><td class="ac">5.77</td><td class="ac">1.40</td></tr>
+<tr><td>9/17 下午後</td><td>1.44</td><td>0</td><td>1.09</td><td>0.20</td></tr>
+</table></div>
+</section>
+
+<section class="slide">
+<h2>與已知事件對照：日期對不上</h2>
+<div class="tl">
+<div class="r"><b>9/4 19:38</b> DIR0 跳升、IR0 流程出現 → 實際起點（早於 9/7）</div>
+<div><b>9/5 18:56 ~ 9/7 10:26</b> 流程退回 IR2_1，DIR0 仍 3.8%</div>
+<div><b>9/7</b> PMU 板更換；12:15 流程切回 IR0，DIR0 照舊 → 不是起因，也未解決</div>
+<div class="r"><b>9/16</b> DIR0 單批 10~11%（RK32560 / RK32552 / RK32435）</div>
+<div class="g"><b>9/17 10:26 ~ 16:12</b> DIR0 8.9% → 3.1% → 1.2% → 實際解除點</div>
+<div><b>9/21</b> DIR0 參數調整；前後 DIR0 持平 0.9~1.3%，無階梯變化</div>
+</div>
+<p class="mu">可能：9/17 已先調整、9/21 為補記錄或另一項小調整，請核對紀錄。</p>
+</section>
+
+<section class="slide">
+<h2>影響範圍：不是整台硬體壞掉</h2>
+<div class="grid">
+<div class="card"><b>50A530mV @1003（同時段）</b><br>DIR0 僅 1.9%（9/16~17 單批約 1%），gap 4.0</div>
+<div class="card"><b>50A550mV @1003（9/16）</b><br>DIR0 高達 10.9%</div>
+<div class="card"><b>50A550mV @2101</b><br>DIR0 約 1%，全期無變化</div>
+</div>
+<p style="margin-top:2vh">→ 較像是 <b>50A550mV / 35A570mV 的 DIR0 條件或 limit 在 9/4 被改動</b>，而非 PMU / 機台硬體故障。</p>
+<p class="mu">以上為 lot 級統計，無法分辨是 limit 變嚴，還是量測值本身偏移。</p>
+</section>
+
+<section class="slide">
+<h2>建議確認事項</h2>
+<ul>
+<li>9/4 19:00~20:00 在 1003 做了什麼：載入新程式 / limit、IR2_1 與 IR0 bin 重新定義？</li>
+<li>9/5 15:21~18:56 的空窗，與 9/7 12:15 重新載程式的原因。</li>
+<li>9/17 上午至下午是否有人調過 DIR0 limit 或 test condition，並與 9/21 紀錄比對。</li>
+<li>以 9/17 後的 DIR0 條件為準，評估異常期被判 DIR0 fail 的 wafer 是否需複測回收（約 113+15 批）。</li>
+<li>確認 AEC-Q（DPAT / GDBC）損失是否隨 DIR0 一併恢復。</li>
+</ul>
+</section>
+
+</div>
+<div class="nav"><button id="p">◀</button><span id="cnt"></span><button id="n">▶</button></div>
+<script>
+var S=document.querySelectorAll('.slide'),i=0;
+function go(k){i=Math.max(0,Math.min(S.length-1,k));S.forEach(function(s,j){s.classList.toggle('on',j==i)});document.getElementById('cnt').textContent=(i+1)+' / '+S.length}
+document.getElementById('p').onclick=function(){go(i-1)};document.getElementById('n').onclick=function(){go(i+1)};
+document.addEventListener('keydown',function(e){if(e.key=='ArrowRight'||e.key==' '||e.key=='PageDown')go(i+1);if(e.key=='ArrowLeft'||e.key=='PageUp')go(i-1)});
+var D=[["9/1",1.35],["9/2",1.62],["9/3",1.66],["9/4",4.23],["9/5",4.45],["9/6",4.85],["9/7",4.98],["9/8",4.78],["9/9",5.57],["9/10",5.93],["9/11",5.68],["9/12",5.93],["9/13",5.76],["9/14",5.74],["9/16",10.93],["9/17",2.37],["9/18",1.10],["9/19",0.93],["9/20",0.86],["9/21",1.15],["9/22",1.23],["9/25",1.27],["9/26",1.20],["9/27",0.93]];
+(function(){var w=800,h=300,b=36,mx=12,bw=(w-b)/D.length,o='<svg viewBox="0 0 '+w+' '+h+'" width="100%">';
+for(var g=0;g<=12;g+=4){var y=h-b-(h-b-10)*g/mx;o+='<line x1="'+b+'" x2="'+w+'" y1="'+y+'" y2="'+y+'" stroke="var(--bd)"/><text x="4" y="'+(y+4)+'">'+g+'%</text>'}
+D.forEach(function(d,k){var bh=(h-b-10)*d[1]/mx,x=b+k*bw+3,c=d[1]>3?'var(--ac)':'var(--ok)';
+o+='<rect x="'+x+'" y="'+(h-b-bh)+'" width="'+(bw-6)+'" height="'+bh+'" fill="'+c+'" rx="2"/><text x="'+(x+(bw-6)/2)+'" y="'+(h-b-bh-4)+'" text-anchor="middle">'+d[1].toFixed(1)+'</text><text x="'+(x+(bw-6)/2)+'" y="'+(h-18)+'" text-anchor="middle">'+d[0]+'</text>'});
+document.getElementById('chart').innerHTML=o+'</svg>'})();
+go(0);
+</script></body></html>
