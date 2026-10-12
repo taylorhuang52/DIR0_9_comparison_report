@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>9/17 後 CP 重測批追蹤（更新至 10/12 日報）</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#1c2430;--mu:#5d6b7c;--ac:#d9363e;--ok:#1f9d63;--bl:#2b5fd9;--bd:#dde2e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mu:#94a3b5;--ac:#ff6b73;--ok:#43c88a;--bl:#7ba2ff;--bd:#2c3744}}
+:root[data-theme="dark"]{--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mu:#94a3b5;--ac:#ff6b73;--ok:#43c88a;--bl:#7ba2ff;--bd:#2c3744}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;overflow:hidden}
+.deck{height:100%;position:relative}
+.slide{position:absolute;inset:0;padding:4vh 6vw 9vh;display:none;flex-direction:column;overflow-y:auto}
+.slide.on{display:flex}
+h1{font-size:clamp(26px,4.2vw,48px);margin:.2em 0}
+h2{font-size:clamp(22px,3vw,34px);margin:0 0 .5em;border-left:6px solid var(--ac);padding-left:.5em}
+p,li{font-size:clamp(15px,1.7vw,21px);line-height:1.6}
+.mu{color:var(--mu)}.ac{color:var(--ac);font-weight:700}.ok{color:var(--ok);font-weight:700}
+ul{padding-left:1.2em;margin:.3em 0}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px 20px}
+.big{font-size:clamp(28px,4vw,44px);font-weight:800}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:clamp(13px,1.5vw,18px)}
+th,td{border:1px solid var(--bd);padding:8px 12px;text-align:center}
+th{background:var(--bg)}
+.row{display:flex;align-items:center;gap:12px;margin:10px 0;font-size:clamp(14px,1.6vw,19px)}
+.row .l{width:min(38%,300px)}
+.row .b{height:26px;border-radius:4px;min-width:2px}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;align-items:center;gap:14px;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.nav button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:6px 16px;font-size:16px;cursor:pointer}
+#cnt{color:var(--mu);font-size:14px;min-width:60px;text-align:center}
+.sm table{font-size:clamp(11px,1.25vw,15px)}.sm th,.sm td{padding:3px 8px}.tg{display:inline-block;padding:1px 8px;border-radius:10px;font-size:.85em;border:1px solid var(--bd)}.tA{color:var(--ac)}.sW{color:var(--ac)}.sN{color:var(--ok);font-weight:700}.tB,.tC{color:var(--ok)}</style></head><body>
+<div class="deck">
+<section class="slide on">
+<p class="mu">比對 DailyReport 20260929 ~ <b>20261012</b>（Final yield 修正版）與 saw.xlsx（沿用 10/6 版）· 資料至 10/12 09:41</p>
+<h1>新進度：重測累計 106 批（+22）；50A/530mV 20 批已在 1003 開始重測</h1>
+<div class="grid" style="margin-top:2vh">
+<div class="card"><div class="mu">累計重測：良率 / DIR0</div><div class="big"><span class="ac">91.15</span> → <span class="ok">94.75</span></div><div class="mu">+3.60 pt；DIR0 4.89% → 1.38%</div></div>
+<div class="card"><div class="mu">新增重測</div><div class="big">2 + 20 批</div><div class="mu">50A/550mV 2 批（10/7，2101）；50A/530mV 20 批（10/11~12，1003）</div></div>
+<div class="card"><div class="mu">注意：RK32407 / RK32483</div><div class="big"><span class="ac">+1.05 / +0.27</span> pt</div><div class="mu">重測後 DIR0 仍 4.83% / 5.54%，回收有限</div></div>
+</div>
+</section>
+<section class="slide">
+<h2>較上次（10/7 版）的變化</h2>
+<div class="tw"><table>
+<tr><th>項目</th><th>上次</th><th>這次</th><th>說明</th></tr>
+<tr><td>9/17 後累計重測批數</td><td>84</td><td>106</td><td class="ok">+22</td></tr>
+<tr><td>　50A/550mV（含 35A/570mV）</td><td>84</td><td>86</td><td class="ok">+2（RK32407、RK32483）</td></tr>
+<tr><td>　50A/530mV</td><td>0</td><td>20</td><td class="ok">+20（1003，10/11~12）</td></tr>
+<tr><td>重測平均良率 %（前→後）</td><td>90.61 → 94.65</td><td>91.15 → 94.75</td><td>530mV 原良率較高，拉高平均</td></tr>
+<tr><td>重測平均 Final yield gap（Initial−Final）</td><td>0.32 pt</td><td>0.30 pt</td><td>修正後持續正常</td></tr>
+<tr><td>異常期未重測批數</td><td>86</td><td>64</td><td class="ok">−22（550mV 40、530mV 24）</td></tr>
+<tr><td>50A/550mV 未重測：DIR0 &gt; 5% / &gt; 8%</td><td>12 / 4</td><td>11 / 4</td><td class="ac">&gt; 8% 的 4 批仍未處理</td></tr>
+<tr><td>50A/550mV 未重測：未見切割紀錄</td><td>5</td><td>3</td><td>RK32407、RK32483 已重測</td></tr>
+</table></div>
+<p class="mu">另更正：10/7 版曾以 24 片資料取代 RK32359 等 5 批的 25 片列，10/12 日報確認以 25 片列為準，已還原（對重測統計影響很小）。</p>
+</section>
+<section class="slide">
+<h2>50A/550mV 新增 2 批與近期重測趨勢（皆 2101）</h2>
+<div class="tw"><table>
+<tr><th>批號</th><th>重測時間</th><th>良率 %</th><th>DIR0 %</th><th>IR0 %</th></tr><tr><td>RK32414</td><td>10/03 10:52</td><td>88.54 → 92.15 <b class="ok">(+3.61)</b></td><td>6.34 → <span class="ac">2.69</span></td><td>3.24 → 3.24</td></tr><tr><td>RK32413</td><td>10/03 12:32</td><td>87.54 → 90.55 <b class="ok">(+3.01)</b></td><td>5.77 → <span class="ac">2.56</span></td><td>4.15 → 4.21</td></tr><tr><td>RK32383</td><td>10/03 14:10</td><td>84.30 → 87.02 <b class="ok">(+2.72)</b></td><td>7.58 → <span class="ac">4.55</span></td><td>4.78 → 4.81</td></tr><tr><td>RK32478</td><td>10/05 18:45</td><td>89.56 → 90.77 <b class="ok">(+1.21)</b></td><td>5.74 → <span class="ac">4.52</span></td><td>2.94 → 2.92</td></tr><tr><td>RK32479</td><td>10/05 20:20</td><td>89.60 → 92.33 <b class="ok">(+2.73)</b></td><td>5.79 → <span class="ac">2.93</span></td><td>2.78 → 2.81</td></tr><tr><td>RK32481</td><td>10/05 21:56</td><td>86.00 → 88.35 <b class="ok">(+2.35)</b></td><td>5.80 → <span class="ac">3.03</span></td><td>4.31 → 4.33</td></tr><tr><td>RK32483</td><td>10/07 11:24</td><td>87.38 → 87.65 <b class="ok">(+0.27)</b></td><td>6.06 → <span class="ac">5.54</span></td><td>3.50 → 3.52</td></tr><tr><td>RK32407</td><td>10/07 12:56</td><td>85.23 → 86.28 <b class="ok">(+1.05)</b></td><td>6.21 → <span class="ac">4.83</span></td><td>5.04 → 5.04</td></tr>
+</table></div>
+<ul><li><b>RK32407、RK32483</b>（原為「未見切割紀錄」的優先批）重測後良率只增加 +1.05 / +0.27 pt，DIR0 仍 4.83% / 5.54%，且 IR0 本身偏高（5.04% / 3.52%）。</li>
+<li>最近 8 批重測的 DIR0 回收（−0.5 ~ −3.7 pt）都不如先前（多數降至約 1%），這些批可能有 wafer 本身的 DIR0 / IR0 問題，不全是測試條件造成。</li>
+<li>仍未處理的 RK32552、RK32560（DIR0 10.7% / 10.9%）重測後回收量可能也有限。</li></ul>
+</section>
+<section class="slide">
+<h2>50A/530mV 新增 20 批重測（1003，10/11~12）</h2>
+<div class="tw sm"><table>
+<tr><th>批號</th><th>原測日</th><th>重測時間</th><th>良率 %</th><th>DIR0 %</th><th>IR0 %</th></tr><tr><td>RK32427</td><td>09/11</td><td>10/11 01:43</td><td>93.23 → 94.98 <b class="ok">(+1.75)</b></td><td>2.65 → 0.72</td><td>2.12 → 2.33</td></tr><tr><td>RK32423</td><td>09/11</td><td>10/11 02:53</td><td>92.27 → 94.22 <b class="ok">(+1.95)</b></td><td>2.33 → 0.73</td><td>2.66 → 2.87</td></tr><tr><td>RK32420</td><td>09/12</td><td>10/11 04:03</td><td>95.01 → 96.85 <b class="ok">(+1.84)</b></td><td>2.11 → 0.81</td><td>0.84 → 0.94</td></tr><tr><td>RK32419</td><td>09/11</td><td>10/11 05:20</td><td>94.33 → 95.66 <b class="ok">(+1.33)</b></td><td>2.30 → 0.74</td><td>1.86 → 2.08</td></tr><tr><td>RK32416</td><td>09/12</td><td>10/11 06:29</td><td>95.06 → 96.59 <b class="ok">(+1.53)</b></td><td>2.05 → 0.69</td><td>1.19 → 1.33</td></tr><tr><td>RK32418</td><td>09/11</td><td>10/11 07:46</td><td>93.92 → 96.21 <b class="ok">(+2.29)</b></td><td>2.24 → 0.73</td><td>1.32 → 1.45</td></tr><tr><td>RK32526</td><td>09/16</td><td>10/11 08:58</td><td>94.15 → 96.54 <b class="ok">(+2.39)</b></td><td>1.09 → 0.73</td><td>1.25 → 1.46</td></tr><tr><td>RK32512</td><td>09/07</td><td>10/11 10:07</td><td>93.84 → 94.68 <b class="ok">(+0.84)</b></td><td>2.45 → 0.63</td><td>0.00 → 2.40</td></tr><tr><td>RK32634</td><td>09/11</td><td>10/11 11:16</td><td>87.89 → 95.11 <b class="ok">(+7.22)</b></td><td>2.61 → 0.89</td><td>1.87 → 2.02</td></tr><tr><td>RK32421</td><td>09/11</td><td>10/11 12:26</td><td>94.09 → 96.24 <b class="ok">(+2.15)</b></td><td>2.35 → 0.70</td><td>1.48 → 1.71</td></tr><tr><td>RK32313</td><td>09/07</td><td>10/11 13:35</td><td>96.31 → 97.23 <b class="ok">(+0.92)</b></td><td>1.57 → 0.57</td><td>0.00 → 1.04</td></tr><tr><td>RK32417</td><td>09/09</td><td>10/11 14:43</td><td>96.11 → 96.98 <b class="ok">(+0.87)</b></td><td>1.65 → 0.66</td><td>0.94 → 1.07</td></tr><tr><td>RK32438</td><td>09/11</td><td>10/11 15:49</td><td>90.35 → 95.48 <b class="ok">(+5.13)</b></td><td>2.35 → 0.83</td><td>1.51 → 1.71</td></tr><tr><td>RK32315</td><td>09/07</td><td>10/11 17:04</td><td>93.78 → 96.13 <b class="ok">(+2.35)</b></td><td>1.77 → 0.61</td><td>1.71 → 1.89</td></tr><tr><td>RK32312</td><td>09/07</td><td>10/11 18:13</td><td>96.00 → 96.94 <b class="ok">(+0.94)</b></td><td>1.91 → 0.39</td><td>0.00 → 1.39</td></tr><tr><td>RK32311</td><td>09/07</td><td>10/11 20:36</td><td>94.15 → 95.25 <b class="ok">(+1.10)</b></td><td>2.84 → 0.46</td><td>0.00 → 2.34</td></tr><tr><td>RK32437</td><td>09/08</td><td>10/11 20:42</td><td>93.47 → 95.06 <b class="ok">(+1.59)</b></td><td>2.31 → 0.71</td><td>1.79 → 2.04</td></tr><tr><td>RK32425</td><td>09/08</td><td>10/11 21:51</td><td>94.98 → 96.62 <b class="ok">(+1.64)</b></td><td>1.92 → 0.49</td><td>1.01 → 1.11</td></tr><tr><td>RK32282</td><td>09/07</td><td>10/11 23:00</td><td>95.51 → 96.63 <b class="ok">(+1.12)</b></td><td>2.32 → 0.39</td><td>0.00 → 1.57</td></tr><tr><td>RK32436</td><td>09/11</td><td>10/12 00:08</td><td>94.16 → 96.51 <b class="ok">(+2.35)</b></td><td>2.30 → 0.65</td><td>1.30 → 1.49</td></tr>
+<tr><th>平均</th><th></th><th></th><th>93.93 → 96.00 (+2.06)</th><th>2.16 → 0.66</th><th>1.14 → 1.71</th></tr>
+</table></div>
+<p class="mu">更正：先前認為 530mV 的 DIR0（約 1.9~2.2%）「正常、不需重測」並不準確。重測後降到 0.66%，良率平均 +2.06 pt（RK32634 +7.22、RK32438 +5.13 是原良率偏低的批）。IR0 由 1.14% 升至 1.71%，為 IR2_1 / IR0 流程歸類改變。</p>
+</section>
+<section class="slide">
+<h2>50A/550mV + 35A/570mV 重測（86 批）：依原測日期</h2>
+<div class="tw"><table>
+<tr><th>原測日</th><th>批數</th><th>原良率 %</th><th>重測良率 %</th><th>原 DIR0 %</th><th>重測 DIR0 %</th></tr><tr><td>9/07</td><td>8</td><td>91.66</td><td>94.93</td><td>5.02</td><td>1.45</td></tr><tr><td>9/08</td><td>13</td><td>91.35</td><td>94.73</td><td>4.78</td><td>1.40</td></tr><tr><td>9/09</td><td>16</td><td>88.66</td><td>93.09</td><td>5.57</td><td>1.13</td></tr><tr><td>9/10</td><td>17</td><td>91.32</td><td>95.19</td><td>5.78</td><td>1.96</td></tr><tr><td>9/11</td><td>7</td><td>90.95</td><td>95.17</td><td>5.68</td><td>1.37</td></tr><tr><td>9/12</td><td>14</td><td>90.41</td><td>95.44</td><td>5.93</td><td>0.94</td></tr><tr><td>9/13</td><td>4</td><td>90.89</td><td>93.92</td><td>5.78</td><td>2.76</td></tr><tr><td>9/14</td><td>7</td><td>89.39</td><td>92.40</td><td>5.74</td><td>2.59</td></tr>
+<tr><th>合計</th><th>86</th><th class="ac">90.51</th><th class="ok">94.46</th><th class="ac">5.53</th><th class="ok">1.55</th></tr>
+</table></div>
+<p class="mu">原測皆在 1003。9/13（4 批）、9/10（17 批）原測批的重測 DIR0 偏高，主要是最近 8 批在 2101 重測的結果。</p>
+</section>
+<section class="slide">
+<h2>增益主要來自 DIR0；Final yield 修正持續正常</h2>
+<div class="row"><div class="l">良率提升（106 批）</div><div class="b" style="width:calc(3.6*10%);background:var(--ok)"></div><b>+3.60 pt</b></div>
+<div class="row"><div class="l">DIR0 下降</div><div class="b" style="width:calc(3.52*10%);background:var(--bl)"></div><b>−3.52 pt</b></div>
+<div class="row"><div class="l">IR0 變化（1.90% → 2.06%）</div><div class="b" style="width:calc(0.16*10%);background:var(--ac)"></div><b>+0.16 pt</b></div>
+<div class="tw sm" style="margin-top:2vh"><table>
+<tr><th>分組</th><th>批數</th><th>良率 %</th><th>DIR0 %</th><th>IR0 %</th></tr>
+<tr><td>50A/550mV 重測於 1003</td><td>42</td><td>90.99 → 94.97</td><td>5.35 → 1.31</td><td>1.56 → 1.68</td></tr><tr><td>50A/550mV 重測於 2101</td><td>29</td><td>88.63 → 92.54</td><td>5.73 → 1.76</td><td>3.39 → 3.39</td></tr><tr><td>35A/570mV（1003）</td><td>15</td><td>92.78 → 96.73</td><td>5.63 → 1.78</td><td>1.00 → 1.01</td></tr><tr><td>50A/530mV（1003）</td><td>20</td><td>93.93 → 96.00</td><td>2.16 → 0.66</td><td>1.14 → 1.71</td></tr>
+</table></div>
+<p class="mu">Final yield：106 筆重測列 Initial − Final 平均僅 0.30 pt（修正前約 5.3 pt），最大為 EK58925 的 1.55 pt。2101 重測的 DIR0 回收（5.73% → 1.76%）不如 1003（5.35% → 1.31%）。</p>
+</section>
+<section class="slide">
+<h2>未重測總覽：依 Type(A) / Type(mV) 與 saw 切割分類</h2>
+<div class="tw sm"><table>
+<tr><th>Type(A)</th><th>Type(mV)</th><th>異常期批數</th><th>已重測</th><th>未重測</th><th>未重測 DIR0 %</th><th>說明</th></tr>
+<tr><td>35A</td><td>570MV</td><td>15</td><td>15</td><td class="ok">0</td><td>–</td><td>已全部重測</td></tr>
+<tr><td>50A</td><td>550MV</td><td>112</td><td>72</td><td class="ac">40</td><td class="ac">5.19</td><td>主要受影響，需處理</td></tr>
+<tr><td>50A</td><td>530MV</td><td>44</td><td>20</td><td>24</td><td>1.68</td><td>已開始重測，建議續做；無 saw 紀錄</td></tr>
+</table></div>
+<div class="tw sm" style="margin-top:2vh"><table>
+<tr><th>50A/550mV 未重測 40 批</th><th>批數</th><th>平均良率 %</th><th>DIR0 %</th><th>&gt;5%</th><th>&gt;8%</th></tr>
+<tr><td><span class="sN">未見切割紀錄</span></td><td>3</td><td>87.62</td><td>8.77</td><td>2</td><td>2</td></tr><tr><td>已切割（saw 有紀錄）</td><td>34</td><td>91.29</td><td>4.93</td><td>9</td><td>2</td></tr><tr><td>已切割（疑似：僅有 RS 拼寫紀錄）</td><td>3</td><td>90.70</td><td>4.42</td><td>0</td><td>0</td></tr>
+<tr><th>合計</th><th>40</th><th>90.97</th><th>5.19</th><th>11</th><th>4</th></tr></table></div>
+<p class="mu">未見切割紀錄的 3 批（RK32318、RK32552、RK32560）約 4.3 萬顆，若 DIR0 回到約 1.3% 理論可回收約 3.2 千顆；依 RK32407 / RK32483 的經驗實際可能更少。</p>
+</section>
+<section class="slide">
+<h2>saw.xlsx 對應方式與觀察（saw.xlsx 沿用 10/6 版，未更新）</h2>
+<ul>
+<li>saw.xlsx 共 794 筆（去除重複 4 筆，790 筆 wafer 紀錄，約 421 個批號），以批號對應日報。</li>
+<li><b>疑似對應仍為 3 批</b>：RK32295、RK32319、RK32320 僅有 RS 拼寫的紀錄；RK32308、RK32358 本身有 RK 紀錄，為確定已切割。</li>
+<li><b>切割發生在重測之後</b>：已重測且有 saw 紀錄的 81 批中，78 批切割日晚於重測日、3 批同日、0 批早於重測。</li>
+<li><b>未重測批大多已切割</b>：50A/550mV 未重測 40 批中 37 批有 saw 紀錄（9/14 ~ 10/5）。</li>
+<li><b>為部分片切割</b>：每批 saw 紀錄僅 1~3 片，批內約 25 片。已切割 wafer 無法重測，其餘 wafer 是否仍可重測需確認。</li>
+<li>saw.xlsx 若有 10/6 之後的新紀錄，請提供，以更新切割狀態。</li>
+</ul>
+</section>
+<section class="slide">
+<h2>未重測清單：50A / 550mV（40 批；未見切割紀錄者排最前）</h2>
+<div class="tw sm"><table><tr><th>批號</th><th>原測時間（1003）</th><th>良率 %</th><th>DIR0 %</th><th>切割狀態</th><th>saw 片數</th><th>saw 日期</th><th>舊推估</th></tr><tr><td>RK32318</td><td>09/05 02:17</td><td>90.57</td><td>4.68</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td><td>A</td></tr><tr><td>RK32552</td><td>09/16 20:07</td><td>85.77</td><td class="ac">10.72</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td><td>C</td></tr><tr><td>RK32560</td><td>09/16 18:52</td><td>86.51</td><td class="ac">10.90</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td><td>C</td></tr><tr><td>RK32295</td><td>09/05 11:01</td><td>90.28</td><td>4.42</td><td><span class="sW">已切割（疑似）</span></td><td>1</td><td>09/19</td><td>A</td></tr><tr><td>RK32319</td><td>09/04 21:03</td><td>90.70</td><td>4.16</td><td><span class="sW">已切割（疑似）</span></td><td>2</td><td>09/19</td><td>A</td></tr><tr><td>RK32320</td><td>09/04 23:34</td><td>91.12</td><td>4.68</td><td><span class="sW">已切割（疑似）</span></td><td>2</td><td>09/19</td><td>A</td></tr><tr><td>EK58927</td><td>09/05 21:17</td><td>93.26</td><td>4.23</td><td><span class="sW">已切割</span></td><td>1</td><td>09/21</td><td>C</td></tr><tr><td>EK58928</td><td>09/06 13:07</td><td>92.92</td><td>4.52</td><td><span class="sW">已切割</span></td><td>2</td><td>09/22</td><td>C</td></tr><tr><td>NK14045</td><td>09/06 15:38</td><td>89.28</td><td>4.66</td><td><span class="sW">已切割</span></td><td>2</td><td>09/19</td><td>N</td></tr><tr><td>RK32308</td><td>09/05 13:31</td><td>89.15</td><td>4.70</td><td><span class="sW">已切割</span></td><td>3</td><td>09/19</td><td>A</td></tr><tr><td>RK32309</td><td>09/05 07:19</td><td>90.29</td><td>4.50</td><td><span class="sW">已切割</span></td><td>2</td><td>09/21</td><td>A</td></tr><tr><td>RK32310</td><td>09/05 12:15</td><td>89.95</td><td>5.03</td><td><span class="sW">已切割</span></td><td>2</td><td>09/25</td><td>A</td></tr><tr><td>RK32317</td><td>09/05 03:39</td><td>89.01</td><td>4.78</td><td><span class="sW">已切割</span></td><td>2</td><td>09/21</td><td>A</td></tr><tr><td>RK32321</td><td>09/04 19:38</td><td>91.06</td><td>4.08</td><td><span class="sW">已切割</span></td><td>1</td><td>09/18</td><td>A</td></tr><tr><td>RK32322</td><td>09/05 00:48</td><td>91.41</td><td>3.90</td><td><span class="sW">已切割</span></td><td>3</td><td>09/25</td><td>A</td></tr><tr><td>RK32323</td><td>09/05 04:43</td><td>91.92</td><td>3.92</td><td><span class="sW">已切割</span></td><td>2</td><td>09/25</td><td>A</td></tr><tr><td>RK32324</td><td>09/05 06:04</td><td>86.17</td><td>5.91</td><td><span class="sW">已切割</span></td><td>1</td><td>09/25</td><td>A</td></tr><tr><td>RK32327</td><td>09/06 02:03</td><td>90.77</td><td>5.87</td><td><span class="sW">已切割</span></td><td>3</td><td>09/20</td><td>A</td></tr><tr><td>RK32328</td><td>09/05 23:45</td><td>92.37</td><td>4.68</td><td><span class="sW">已切割</span></td><td>2</td><td>09/17</td><td>A</td></tr><tr><td>RK32331</td><td>09/05 08:34</td><td>90.64</td><td>3.84</td><td><span class="sW">已切割</span></td><td>1</td><td>09/28</td><td>B</td></tr><tr><td>RK32335</td><td>09/04 22:19</td><td>90.46</td><td>3.98</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td><td>B</td></tr><tr><td>RK32337</td><td>09/05 14:56</td><td>91.15</td><td>3.98</td><td><span class="sW">已切割</span></td><td>2</td><td>09/29</td><td>B</td></tr><tr><td>RK32338</td><td>09/05 09:52</td><td>93.16</td><td>3.58</td><td><span class="sW">已切割</span></td><td>2</td><td>09/29</td><td>B</td></tr><tr><td>RK32339</td><td>09/06 11:55</td><td>90.70</td><td>5.96</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td><td>B</td></tr><tr><td>RK32340</td><td>09/06 18:00</td><td>92.13</td><td>4.63</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td><td>B</td></tr><tr><td>RK32343</td><td>09/05 18:56</td><td>92.95</td><td>4.37</td><td><span class="sW">已切割</span></td><td>2</td><td>09/14</td><td>B</td></tr><tr><td>RK32348</td><td>09/06 10:46</td><td>92.44</td><td>4.64</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td><td>B</td></tr><tr><td>RK32349</td><td>09/06 15:25</td><td>92.92</td><td>4.61</td><td><span class="sW">已切割</span></td><td>2</td><td>09/17</td><td>B</td></tr><tr><td>RK32351</td><td>09/06 16:47</td><td>91.85</td><td>4.95</td><td><span class="sW">已切割</span></td><td>2</td><td>09/17</td><td>B</td></tr><tr><td>RK32353</td><td>09/06 04:50</td><td>93.39</td><td>3.86</td><td><span class="sW">已切割</span></td><td>2</td><td>09/17</td><td>B</td></tr><tr><td>RK32355</td><td>09/06 03:38</td><td>91.87</td><td>5.21</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td><td>B</td></tr><tr><td>RK32356</td><td>09/05 20:05</td><td>93.27</td><td>4.42</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td><td>B</td></tr><tr><td>RK32358</td><td>09/06 07:19</td><td>91.51</td><td>5.11</td><td><span class="sW">已切割</span></td><td>2</td><td>09/19</td><td>B</td></tr><tr><td>RK32360</td><td>09/06 00:54</td><td>92.82</td><td>4.39</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td><td>B</td></tr><tr><td>RK32372</td><td>09/06 09:40</td><td>91.51</td><td>5.38</td><td><span class="sW">已切割</span></td><td>1</td><td>09/21</td><td>B</td></tr><tr><td>RK32373</td><td>09/06 06:00</td><td>93.13</td><td>4.73</td><td><span class="sW">已切割</span></td><td>1</td><td>09/19</td><td>B</td></tr><tr><td>RK32377</td><td>09/06 14:16</td><td>93.93</td><td>4.11</td><td><span class="sW">已切割</span></td><td>3</td><td>09/20</td><td>B</td></tr><tr><td>RK32378</td><td>09/06 08:30</td><td>92.62</td><td>4.96</td><td><span class="sW">已切割</span></td><td>3</td><td>09/21</td><td>B</td></tr><tr><td>RK32435</td><td>09/16 21:17</td><td>85.42</td><td class="ac">11.16</td><td><span class="sW">已切割</span></td><td>3</td><td>10/02</td><td>B</td></tr><tr><td>RK32558</td><td>09/17 10:26</td><td>88.29</td><td class="ac">8.89</td><td><span class="sW">已切割</span></td><td>2</td><td>10/05</td><td>C</td></tr></table></div>
+<p class="mu">紅字：DIR0 &gt; 8%（RK32435、RK32552、RK32558、RK32560）。「舊推估」為先前依批號順序的 A/B/C 推估，僅供參考。</p>
+</section>
+<section class="slide">
+<h2>未重測清單：50A / 530mV（24 批）與 35A / 570mV</h2>
+<div class="tw sm"><table><tr><th>批號</th><th>原測日</th><th>DIR0 %</th><th>批號</th><th>原測日</th><th>DIR0 %</th><th>批號</th><th>原測日</th><th>DIR0 %</th></tr><tr><td>RK32229</td><td>09/17</td><td>0.75</td><td>RK32281</td><td>09/06</td><td>1.98</td><td>RK32283</td><td>09/06</td><td>2.35</td></tr><tr><td>RK32284</td><td>09/07</td><td>1.91</td><td>RK32297</td><td>09/06</td><td>1.70</td><td>RK32298</td><td>09/06</td><td>2.37</td></tr><tr><td>RK32299</td><td>09/07</td><td>2.16</td><td>RK32300</td><td>09/07</td><td>1.89</td><td>RK32301</td><td>09/07</td><td>2.39</td></tr><tr><td>RK32316</td><td>09/07</td><td>1.94</td><td>RK32422</td><td>09/11</td><td>2.95</td><td>RK32424</td><td>09/11</td><td>2.61</td></tr><tr><td>RK32426</td><td>09/12</td><td>2.23</td><td>RK32439</td><td>09/09</td><td>1.80</td><td>RK32440</td><td>09/17</td><td>0.91</td></tr><tr><td>RK32441</td><td>09/09</td><td>1.89</td><td>RK32513</td><td>09/16</td><td>1.11</td><td>RK32514</td><td>09/17</td><td>0.85</td></tr><tr><td>RK32517</td><td>09/17</td><td>0.80</td><td>RK32519</td><td>09/11</td><td>2.10</td><td>RK32521</td><td>09/17</td><td>1.06</td></tr><tr><td>RK32523</td><td>09/17</td><td>0.97</td><td>RK32528</td><td>09/17</td><td>0.85</td><td>RK32620</td><td>09/17</td><td>0.94</td></tr></table></div>
+<p class="mu">50A/530mV 未重測批 DIR0 約 1.7%（最高 2.95%），無 saw 紀錄；已重測的 20 批平均良率 +2.06 pt，建議續做。35A/570mV：15 批已全數重測。</p>
+</section>
+<section class="slide">
+<h2>建議與限制</h2>
+<ul>
+<li>最優先：<b>RK32552、RK32560</b>（DIR0 10.72% / 10.90%，未見切割紀錄）；RK32318（4.68%）次之。預期回收可能不如早期重測批（見 RK32407 / RK32483）。</li>
+<li>RK32435（11.16%）與 RK32558（8.89%）已有 saw 紀錄（3 片 / 2 片），請確認剩餘 wafer 是否可重測。</li>
+<li>50A/530mV 剩 24 批未重測，若比照已重測 20 批約可回收 +2 pt，建議續做。</li>
+<li>最近 8 批 550mV 重測（皆在 2101）DIR0 仍 2.6~5.5%，建議確認是 2101 條件還是 wafer 本身問題（RK32407 / RK32483 的 IR0 也偏高）。</li>
+<li>確認 RS32295 / RS32319 / RS32320 是否為 RK 批，並提供更新後的 saw.xlsx。</li>
+</ul>
+<p class="mu">限制：1 片補測列的 AEC-Q / Final 數值仍有異常，未納入統計；9/13 曾對 RK32310、RK32324、RK32327、NK14045 各抽 1~2 片在 2101 試測，不計入重測；saw 以「有紀錄」視為已切割；統計為 lot 級，良率採 Initial CP yield。</p>
+</section>
+</div>
+<div class="nav"><button id="p">◀</button><span id="cnt"></span><button id="n">▶</button></div>
+<script>
+var S=document.querySelectorAll('.slide'),i=0;
+function go(k){i=Math.max(0,Math.min(S.length-1,k));S.forEach(function(s,j){s.classList.toggle('on',j==i)});document.getElementById('cnt').textContent=(i+1)+' / '+S.length}
+document.getElementById('p').onclick=function(){go(i-1)};document.getElementById('n').onclick=function(){go(i+1)};
+document.addEventListener('keydown',function(e){if(e.key=='ArrowRight'||e.key==' '||e.key=='PageDown')go(i+1);if(e.key=='ArrowLeft'||e.key=='PageUp')go(i-1)});
+go(0);
+</script></body></html>
