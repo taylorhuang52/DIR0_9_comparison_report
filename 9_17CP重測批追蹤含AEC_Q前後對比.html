@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>9/17 後 CP 重測批追蹤（更新至 10/13 日報（含救回 die 數））</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#1c2430;--mu:#5d6b7c;--ac:#d9363e;--ok:#1f9d63;--bl:#2b5fd9;--bd:#dde2e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mu:#94a3b5;--ac:#ff6b73;--ok:#43c88a;--bl:#7ba2ff;--bd:#2c3744}}
+:root[data-theme="dark"]{--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mu:#94a3b5;--ac:#ff6b73;--ok:#43c88a;--bl:#7ba2ff;--bd:#2c3744}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;overflow:hidden}
+.deck{height:100%;position:relative}
+.slide{position:absolute;inset:0;padding:4vh 6vw 9vh;display:none;flex-direction:column;overflow-y:auto}
+.slide.on{display:flex}
+h1{font-size:clamp(26px,4.2vw,48px);margin:.2em 0}
+h2{font-size:clamp(22px,3vw,34px);margin:0 0 .5em;border-left:6px solid var(--ac);padding-left:.5em}
+p,li{font-size:clamp(15px,1.7vw,21px);line-height:1.6}
+.mu{color:var(--mu)}.ac{color:var(--ac);font-weight:700}.ok{color:var(--ok);font-weight:700}
+ul{padding-left:1.2em;margin:.3em 0}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px 20px}
+.big{font-size:clamp(28px,4vw,44px);font-weight:800}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:clamp(13px,1.5vw,18px)}
+th,td{border:1px solid var(--bd);padding:8px 12px;text-align:center}
+th{background:var(--bg)}
+.row{display:flex;align-items:center;gap:12px;margin:10px 0;font-size:clamp(14px,1.6vw,19px)}
+.row .l{width:min(38%,300px)}
+.row .b{height:26px;border-radius:4px;min-width:2px}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;align-items:center;gap:14px;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.nav button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:6px 16px;font-size:16px;cursor:pointer}
+#cnt{color:var(--mu);font-size:14px;min-width:60px;text-align:center}
+.sm table{font-size:clamp(11px,1.25vw,15px)}.sm th,.sm td{padding:3px 8px}.tg{display:inline-block;padding:1px 8px;border-radius:10px;font-size:.85em;border:1px solid var(--bd)}.tA{color:var(--ac)}.sW{color:var(--ac)}.sN{color:var(--ok);font-weight:700}.tB,.tC{color:var(--ok)}</style></head><body>
+<div class="deck">
+<section class="slide on">
+<p class="mu">比對 DailyReport 20260929 ~ <b>20261013</b>（Final yield 修正版）與 Saw_261013 + 舊 saw.xlsx（合併）· 資料至 10/12 13:07</p>
+<h1 style="font-size:clamp(20px,2.8vw,34px)">重測累計 116 批，原應救回約 7.1 萬顆 die（71,306，含 AEC-Q (DPAT / GDBC / WMS) 刷 die 變化；Initial 基準為 58,274），因未即時更新 CP Total (Final) Yield 及 MAP，實際救回數量待 P&amp;P 站提供挑 Die 實際數量比對</h1>
+<div class="grid" style="margin-top:2vh"><div class="card"><div class="mu">50A / 550mV（71 批）</div><div class="big ok">50,444</div><div class="mu">dies（含 AEC-Q）= Initial 基準 39,628 + AEC-Q 刷 die 減少 10,816</div></div><div class="card"><div class="mu">35A / 570mV（15 批）</div><div class="big ok">11,127</div><div class="mu">dies（含 AEC-Q）= Initial 基準 10,024 + AEC-Q 刷 die 減少 1,104</div></div><div class="card"><div class="mu">50A / 530mV（30 批）</div><div class="big ok">9,734</div><div class="mu">dies（含 AEC-Q）= Initial 基準 8,622 + AEC-Q 刷 die 減少 1,112</div></div></div>
+</section>
+<section class="slide">
+<h2>重測原應救回 die 數：依 Type(A) / Type(mV)（待 P&amp;P 實際挑 Die 數比對）</h2>
+<div class="tw sm"><table>
+<tr><th>產品（重測機台）</th><th>批數</th><th>重測 Total in</th><th>Initial 基準 救回 die</th><th>AEC-Q 刷 die 減少</th><th>含 AEC-Q 救回 die</th><th>每批平均</th></tr><tr><td>35A / 570mV（1003）</td><td>15</td><td>253,572</td><td>10,024</td><td>+1,104</td><td class="ok">11,127</td><td>742</td></tr><tr><td>50A / 550mV（1003）</td><td>42</td><td>592,992</td><td>23,621</td><td>+6,264</td><td class="ok">29,885</td><td>712</td></tr><tr><td>50A / 550mV（2101）</td><td>29</td><td>410,096</td><td>16,008</td><td>+4,552</td><td class="ok">20,560</td><td>709</td></tr><tr><td><b>50A / 550mV 小計</b></td><td>71</td><td>1,003,088</td><td>39,628</td><td>+10,816</td><td class="ok">50,444</td><td>710</td></tr><tr><td>50A / 530mV（1003）</td><td>30</td><td>417,480</td><td>8,622</td><td>+1,112</td><td class="ok">9,734</td><td>324</td></tr><tr><th>合計（9/17 後重測）</th><th>116</th><th>1,674,140</th><th>58,274</th><th>+13,031</th><th class="ok">71,306</th><th>615</th></tr>
+</table></div>
+<ul><li>Initial 基準 = （重測 Initial CP yield − 原測 Initial CP yield）× 重測 Total in。</li>
+<li>含 AEC-Q = Initial 基準 +（原測 AEC-Q 刷 die − 重測 AEC-Q 刷 die）；原測 AEC-Q 以各批原測列的 DPAT + GDBC + WMS 數量，按重測片數比例換算。</li>
+<li>AEC-Q 刷 die 在重測後明顯減少（17,120 → 4,089），故含 AEC-Q 的救回數高於 Initial 基準；詳見下一頁。</li></ul>
+</section>
+<section class="slide">
+<h2>AEC-Q (DPAT / GDBC / WMS) 刷 die：重測前後對比</h2>
+<div class="tw sm"><table>
+<tr><th>產品</th><th>批數</th><th>DPAT</th><th>GDBC</th><th>WMS</th><th>AEC-Q 合計（die）</th><th>占 Total in</th><th>減少 die</th></tr><tr><td>35A / 570mV</td><td>15</td><td>73 → 99</td><td>776 → 30</td><td>707 → 323</td><td>1,556 → 452</td><td>0.61% → 0.18%</td><td class="ok">1,104</td></tr><tr><td>50A / 550mV</td><td>71</td><td>232 → 246</td><td>8,691 → 1,373</td><td>4,932 → 1,420</td><td>13,855 → 3,039</td><td>1.38% → 0.30%</td><td class="ok">10,816</td></tr><tr><td>50A / 530mV</td><td>30</td><td>67 → 6</td><td>581 → 174</td><td>1,062 → 418</td><td>1,710 → 598</td><td>0.41% → 0.14%</td><td class="ok">1,112</td></tr><tr><th>合計</th><th>116</th><th>372 → 351</th><th>10,048 → 1,577</th><th>6,701 → 2,161</th><th>17,120 → 4,089</th><th>1.02% → 0.24%</th><th class="ok">13,031</th></tr>
+</table></div>
+<ul><li>數字為「原測 → 重測」；原測值已依重測片數換算，使前後可直接比較。</li>
+<li>減少主要來自 <b>GDBC（10,048 → 1,577）與 WMS（6,701 → 2,161）</b>，DPAT 幾乎不變（372 → 351）。GDBC / WMS 為區域性篩檢，原測 DIR0 fail 集中的批較易被刷，DIR0 回收後隨之下降。</li>
+<li>116 批中僅 2 批重測後 AEC-Q 比例高於原測。含 AEC-Q 後，累計原應救回由 58,274 增為 <b>71,306</b> die。</li></ul>
+<p class="mu">限制：AEC-Q 為 lot 級統計，原測列數字取自日報原測列、重測列取自修正版日報；實際挑 Die 時是否沿用重測後的 MAP，需待 P&amp;P 站數量比對。</p>
+</section>
+<section class="slide">
+<h2>較上次（10/12 版）的變化</h2>
+<div class="tw"><table>
+<tr><th>項目</th><th>上次</th><th>這次</th><th>說明</th></tr>
+<tr><td>9/17 後累計重測批數</td><td>106</td><td>116</td><td class="ok">+10（皆 50A/530mV，1003，10/12）</td></tr>
+<tr><td>　50A/530mV 已重測</td><td>20</td><td>30</td><td class="ok">+10</td></tr>
+<tr><td>累計原應救回 die（含 AEC-Q）</td><td>–</td><td class="ok">71,306</td><td>Initial 基準 58,274；新增 AEC-Q 前後對比頁</td></tr>
+<tr><td>異常期未重測批數</td><td>64</td><td>54</td><td class="ok">−10（550mV 40、530mV 14）</td></tr>
+<tr><td>50A/550mV 未重測：DIR0 &gt; 5% / &gt; 8%</td><td>11 / 4</td><td>11 / 4</td><td class="ac">無變化，&gt; 8% 的 4 批仍未重測</td></tr>
+<tr><td>50A/550mV 未見切割紀錄</td><td>3</td><td>1</td><td>RK32552、RK32560 新增 saw 紀錄（10/6，各 2 片）</td></tr>
+<tr><td>已重測且有 saw 紀錄：切割早於重測</td><td>0</td><td>0</td><td>86 批中 83 批晚於重測、3 批同日</td></tr>
+</table></div>
+<p class="mu">50A/550mV 與 35A/570mV 本次沒有新增重測；最近一筆 550mV 重測仍為 10/7（RK32483、RK32407）。</p>
+</section>
+<section class="slide">
+<h2>50A/530mV 新增 10 批重測（1003，10/12）</h2>
+<div class="tw sm"><table>
+<tr><th>批號</th><th>原測日</th><th>重測時間</th><th>重測片數</th><th>良率 %</th><th>DIR0 %</th><th>原應救回 die</th></tr><tr><td>RK32441</td><td>09/09</td><td>10/12 01:17</td><td>25</td><td>95.49 → 96.85 <b class="ok">(+1.36)</b></td><td>1.89 → 0.42</td><td class="ok">193</td></tr><tr><td>RK32424</td><td>09/11</td><td>10/12 02:25</td><td>25</td><td>93.79 → 95.85 <b class="ok">(+2.06)</b></td><td>2.61 → 0.52</td><td class="ok">293</td></tr><tr><td>RK32439</td><td>09/09</td><td>10/12 03:36</td><td>25</td><td>93.57 → 96.73 <b class="ok">(+3.16)</b></td><td>1.80 → 0.51</td><td class="ok">449</td></tr><tr><td>RK32519</td><td>09/11</td><td>10/12 04:48</td><td>25</td><td>94.30 → 96.15 <b class="ok">(+1.85)</b></td><td>2.10 → 0.49</td><td class="ok">263</td></tr><tr><td>RK32316</td><td>09/07</td><td>10/12 05:58</td><td>25</td><td>95.56 → 96.66 <b class="ok">(+1.10)</b></td><td>1.94 → 0.45</td><td class="ok">156</td></tr><tr><td>RK32301</td><td>09/07</td><td>10/12 07:26</td><td>25</td><td>95.06 → 96.32 <b class="ok">(+1.26)</b></td><td>2.39 → 0.39</td><td class="ok">179</td></tr><tr><td>RK32284</td><td>09/07</td><td>10/12 08:33</td><td>24</td><td>95.86 → 97.54 <b class="ok">(+1.68)</b></td><td>1.91 → 0.38</td><td class="ok">229</td></tr><tr><td>RK32422</td><td>09/11</td><td>10/12 09:37</td><td>23</td><td>89.25 → 95.93 <b class="ok">(+6.68)</b></td><td>2.95 → 1.02</td><td class="ok">873</td></tr><tr><td>RK32514</td><td>09/17</td><td>10/12 10:42</td><td>24</td><td>96.65 → 96.63 <b class="ok">(-0.02)</b></td><td>0.85 → 0.78</td><td class="ok">-3</td></tr><tr><td>RK32426</td><td>09/12</td><td>10/12 13:07</td><td>17</td><td>85.40 → 87.11 <b class="ok">(+1.71)</b></td><td>2.23 → 0.41</td><td class="ok">165</td></tr>
+<tr><th>合計</th><th></th><th></th><th>238</th><th>93.49 → 95.58</th><th>2.07 → 0.54</th><th class="ok">2,796</th></tr>
+</table></div>
+<p class="mu">RK32422（+6.68 pt）是原良率偏低的批，單批救回最多；RK32426 僅 17 片，良率仍只有 87.11%；RK32514 原 DIR0 已很低（0.85%），幾乎沒有增益。30 批 530mV 累計平均 DIR0 2.13% → 0.62%、良率 +2.07 pt。</p>
+</section>
+<section class="slide">
+<h2>未重測總覽與可救回 die 預估</h2>
+<div class="tw sm"><table>
+<tr><th>Type(A) / Type(mV)</th><th>異常期批數</th><th>已重測</th><th>未重測</th><th>未重測平均良率 %</th><th>DIR0 %</th><th>預估可救回 die（上限）</th></tr>
+<tr><td>35A / 570MV</td><td>15</td><td>15</td><td class="ok">0</td><td>–</td><td>–</td><td>–</td></tr>
+<tr><td>50A / 550MV</td><td>112</td><td>72</td><td class="ac">40</td><td>90.97</td><td>5.19</td><td>約 28,419</td></tr>
+<tr><td>50A / 530MV</td><td>44</td><td>30</td><td>14</td><td>95.02</td><td>1.42</td><td>約 4,542</td></tr>
+</table></div>
+<div class="tw sm" style="margin-top:2vh"><table>
+<tr><th>未重測 saw 分類</th><th>批數</th><th>平均良率 %</th><th>DIR0 %</th><th>&gt;5%</th><th>&gt;8%</th></tr>
+<tr><td>50A/550mV：<span class="sN">未見切割紀錄</span></td><td>1</td><td>90.57</td><td>4.68</td><td>0</td><td>0</td></tr><tr><td>50A/550mV：已切割</td><td>36</td><td>91.00</td><td>5.26</td><td>11</td><td>4</td></tr><tr><td>50A/550mV：已切割（疑似，僅 RS 拼寫）</td><td>3</td><td>90.70</td><td>4.42</td><td>0</td><td>0</td></tr>
+<tr><td>50A/530mV：<span class="sN">未見切割紀錄</span></td><td>13</td><td>94.96</td><td>1.38</td><td>0</td><td>0</td></tr><tr><td>50A/530mV：已切割</td><td>1</td><td>95.85</td><td>1.98</td><td>0</td><td>0</td></tr>
+</table></div>
+<p class="mu">預估上限 = 未重測批數 × 同產品已重測批的平均每批救回 die（550mV 710、530mV 324（含 AEC-Q））。550mV 的 39 批已有切割紀錄，且近期在 2101 重測的批回收較差，實際應明顯低於此值；530mV 未見切割的 13 批較可能達到估計值。</p>
+</section>
+<section class="slide">
+<h2>saw 紀錄更新與觀察</h2>
+<ul>
+<li>Saw_261013.xlsx 為滾動區間（9/13 ~ 10/13，816 筆），舊 saw.xlsx 涵蓋 9/6 ~ 10/5；兩檔合併去重後共 1,006 筆、約 530 個批號。</li>
+<li><b>4 批 DIR0 &gt; 8% 全部已有 saw 紀錄</b>：RK32435（3 片，10/2）、RK32558（2 片，10/5）、RK32552 與 RK32560（各 2 片，10/6）。皆為部分片切割，剩餘 wafer 是否可重測需確認。</li>
+<li><b>切割發生在重測之後</b>：已重測且有 saw 紀錄的 86 批中，83 批切割日晚於重測日、3 批同日（RK32359、RK32370、RK32385）、0 批早於重測。</li>
+<li>50A/550mV 未重測 40 批中 39 批有 saw 紀錄（36 確定、3 疑似：RK32295 / 32319 / 32320 僅有 RS 拼寫紀錄），只剩 <b>RK32318</b> 未見切割紀錄。</li>
+<li>50A/530mV 未重測 14 批中僅 1 批有 saw 紀錄（RK32281），其餘 13 批仍可重測。</li>
+</ul>
+</section>
+<section class="slide">
+<h2>未重測清單：50A / 550mV（40 批；未見切割紀錄者排最前）</h2>
+<div class="tw sm"><table><tr><th>批號</th><th>原測時間（1003）</th><th>良率 %</th><th>DIR0 %</th><th>切割狀態</th><th>saw 片數</th><th>saw 首日</th></tr><tr><td>RK32318</td><td>09/05 02:17</td><td>90.57</td><td>4.68</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32295</td><td>09/05 11:01</td><td>90.28</td><td>4.42</td><td><span class="sW">已切割（疑似）</span></td><td>1</td><td>09/19</td></tr><tr><td>RK32319</td><td>09/04 21:03</td><td>90.70</td><td>4.16</td><td><span class="sW">已切割（疑似）</span></td><td>2</td><td>09/19</td></tr><tr><td>RK32320</td><td>09/04 23:34</td><td>91.12</td><td>4.68</td><td><span class="sW">已切割（疑似）</span></td><td>2</td><td>09/19</td></tr><tr><td>EK58927</td><td>09/05 21:17</td><td>93.26</td><td>4.23</td><td><span class="sW">已切割</span></td><td>1</td><td>09/21</td></tr><tr><td>EK58928</td><td>09/06 13:07</td><td>92.92</td><td>4.52</td><td><span class="sW">已切割</span></td><td>2</td><td>09/22</td></tr><tr><td>NK14045</td><td>09/06 15:38</td><td>89.28</td><td>4.66</td><td><span class="sW">已切割</span></td><td>2</td><td>09/19</td></tr><tr><td>RK32308</td><td>09/05 13:31</td><td>89.15</td><td>4.70</td><td><span class="sW">已切割</span></td><td>3</td><td>09/19</td></tr><tr><td>RK32309</td><td>09/05 07:19</td><td>90.29</td><td>4.50</td><td><span class="sW">已切割</span></td><td>2</td><td>09/21</td></tr><tr><td>RK32310</td><td>09/05 12:15</td><td>89.95</td><td>5.03</td><td><span class="sW">已切割</span></td><td>2</td><td>09/25</td></tr><tr><td>RK32317</td><td>09/05 03:39</td><td>89.01</td><td>4.78</td><td><span class="sW">已切割</span></td><td>2</td><td>09/21</td></tr><tr><td>RK32321</td><td>09/04 19:38</td><td>91.06</td><td>4.08</td><td><span class="sW">已切割</span></td><td>1</td><td>09/18</td></tr><tr><td>RK32322</td><td>09/05 00:48</td><td>91.41</td><td>3.90</td><td><span class="sW">已切割</span></td><td>3</td><td>09/25</td></tr><tr><td>RK32323</td><td>09/05 04:43</td><td>91.92</td><td>3.92</td><td><span class="sW">已切割</span></td><td>2</td><td>09/25</td></tr><tr><td>RK32324</td><td>09/05 06:04</td><td>86.17</td><td>5.91</td><td><span class="sW">已切割</span></td><td>1</td><td>09/25</td></tr><tr><td>RK32327</td><td>09/06 02:03</td><td>90.77</td><td>5.87</td><td><span class="sW">已切割</span></td><td>3</td><td>09/20</td></tr><tr><td>RK32328</td><td>09/05 23:45</td><td>92.37</td><td>4.68</td><td><span class="sW">已切割</span></td><td>2</td><td>09/17</td></tr><tr><td>RK32331</td><td>09/05 08:34</td><td>90.64</td><td>3.84</td><td><span class="sW">已切割</span></td><td>1</td><td>09/28</td></tr><tr><td>RK32335</td><td>09/04 22:19</td><td>90.46</td><td>3.98</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td></tr><tr><td>RK32337</td><td>09/05 14:56</td><td>91.15</td><td>3.98</td><td><span class="sW">已切割</span></td><td>2</td><td>09/29</td></tr><tr><td>RK32338</td><td>09/05 09:52</td><td>93.16</td><td>3.58</td><td><span class="sW">已切割</span></td><td>2</td><td>09/29</td></tr><tr><td>RK32339</td><td>09/06 11:55</td><td>90.70</td><td>5.96</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td></tr><tr><td>RK32340</td><td>09/06 18:00</td><td>92.13</td><td>4.63</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td></tr><tr><td>RK32343</td><td>09/05 18:56</td><td>92.95</td><td>4.37</td><td><span class="sW">已切割</span></td><td>2</td><td>09/14</td></tr><tr><td>RK32348</td><td>09/06 10:46</td><td>92.44</td><td>4.64</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td></tr><tr><td>RK32349</td><td>09/06 15:25</td><td>92.92</td><td>4.61</td><td><span class="sW">已切割</span></td><td>2</td><td>09/17</td></tr><tr><td>RK32351</td><td>09/06 16:47</td><td>91.85</td><td>4.95</td><td><span class="sW">已切割</span></td><td>2</td><td>09/17</td></tr><tr><td>RK32353</td><td>09/06 04:50</td><td>93.39</td><td>3.86</td><td><span class="sW">已切割</span></td><td>2</td><td>09/17</td></tr><tr><td>RK32355</td><td>09/06 03:38</td><td>91.87</td><td>5.21</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td></tr><tr><td>RK32356</td><td>09/05 20:05</td><td>93.27</td><td>4.42</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td></tr><tr><td>RK32358</td><td>09/06 07:19</td><td>91.51</td><td>5.11</td><td><span class="sW">已切割</span></td><td>2</td><td>09/19</td></tr><tr><td>RK32360</td><td>09/06 00:54</td><td>92.82</td><td>4.39</td><td><span class="sW">已切割</span></td><td>2</td><td>09/18</td></tr><tr><td>RK32372</td><td>09/06 09:40</td><td>91.51</td><td>5.38</td><td><span class="sW">已切割</span></td><td>1</td><td>09/21</td></tr><tr><td>RK32373</td><td>09/06 06:00</td><td>93.13</td><td>4.73</td><td><span class="sW">已切割</span></td><td>1</td><td>09/19</td></tr><tr><td>RK32377</td><td>09/06 14:16</td><td>93.93</td><td>4.11</td><td><span class="sW">已切割</span></td><td>3</td><td>09/20</td></tr><tr><td>RK32378</td><td>09/06 08:30</td><td>92.62</td><td>4.96</td><td><span class="sW">已切割</span></td><td>3</td><td>09/21</td></tr><tr><td>RK32435</td><td>09/16 21:17</td><td>85.42</td><td class="ac">11.16</td><td><span class="sW">已切割</span></td><td>3</td><td>10/02</td></tr><tr><td>RK32552</td><td>09/16 20:07</td><td>85.77</td><td class="ac">10.72</td><td><span class="sW">已切割</span></td><td>2</td><td>10/06</td></tr><tr><td>RK32558</td><td>09/17 10:26</td><td>88.29</td><td class="ac">8.89</td><td><span class="sW">已切割</span></td><td>2</td><td>10/05</td></tr><tr><td>RK32560</td><td>09/16 18:52</td><td>86.51</td><td class="ac">10.90</td><td><span class="sW">已切割</span></td><td>2</td><td>10/06</td></tr></table></div>
+<p class="mu">紅字：DIR0 &gt; 8%（RK32435、RK32552、RK32558、RK32560），皆已有部分片切割紀錄。</p>
+</section>
+<section class="slide">
+<h2>未重測清單：50A / 530mV（14 批；未見切割紀錄者排最前）</h2>
+<div class="tw sm"><table><tr><th>批號</th><th>原測時間（1003）</th><th>良率 %</th><th>DIR0 %</th><th>切割狀態</th><th>saw 片數</th><th>saw 首日</th></tr><tr><td>RK32229</td><td>09/17 04:57</td><td>96.96</td><td>0.75</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32283</td><td>09/06 20:36</td><td>95.38</td><td>2.35</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32297</td><td>09/06 19:17</td><td>96.23</td><td>1.70</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32298</td><td>09/06 23:01</td><td>94.85</td><td>2.37</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32299</td><td>09/07 05:24</td><td>95.22</td><td>2.16</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32300</td><td>09/07 12:15</td><td>93.87</td><td>1.89</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32440</td><td>09/17 07:19</td><td>92.59</td><td>0.91</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32513</td><td>09/16 22:34</td><td>96.76</td><td>1.11</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32517</td><td>09/17 01:07</td><td>95.51</td><td>0.80</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32521</td><td>09/17 06:08</td><td>94.86</td><td>1.06</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32523</td><td>09/17 02:25</td><td>90.99</td><td>0.97</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32528</td><td>09/17 09:42</td><td>96.08</td><td>0.85</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32620</td><td>09/17 03:44</td><td>95.19</td><td>0.94</td><td><span class="sN">未見切割紀錄</span></td><td>–</td><td>–</td></tr><tr><td>RK32281</td><td>09/06 21:46</td><td>95.85</td><td>1.98</td><td><span class="sW">已切割</span></td><td>1</td><td>10/13</td></tr></table></div>
+<p class="mu">35A/570mV：15 批已全數重測。530mV 已重測的 30 批平均救回約 287 die／批。</p>
+</section>
+<section class="slide">
+<h2>建議與限制</h2>
+<ul>
+<li><b>50A/530mV 剩 13 批未見切割紀錄</b>：已重測 30 批平均每批救回約 324 die，建議優先續做，預估約可救回 4,218 die（含 AEC-Q）。</li>
+<li>50A/550mV DIR0 &gt; 8% 的 4 批已有部分片切割，請先確認剩餘 wafer 數再決定是否重測；RK32318（4.68%）為唯一未見切割的 550mV 批。</li>
+<li>550mV 近期重測（2101）回收偏低（RK32407 +1.05、RK32483 +0.27 pt），預估未重測的 550mV 批實際救回量會低於上限。</li>
+<li>請確認 RS32295 / RS32319 / RS32320 是否為 RK 批，並持續提供更新後的 saw 檔。</li>
+</ul>
+<p class="mu">限制：救回 die 為 lot 級良率差 × Total in 的估算，以 Initial CP good die 計；1 片補測列未納入；saw 以「有紀錄」視為已切割（部分片）；兩份 saw 檔以批號 + wafer_no 去重。</p>
+</section>
+</div>
+<div class="nav"><button id="p">◀</button><span id="cnt"></span><button id="n">▶</button></div>
+<script>
+var S=document.querySelectorAll('.slide'),i=0;
+function go(k){i=Math.max(0,Math.min(S.length-1,k));S.forEach(function(s,j){s.classList.toggle('on',j==i)});document.getElementById('cnt').textContent=(i+1)+' / '+S.length}
+document.getElementById('p').onclick=function(){go(i-1)};document.getElementById('n').onclick=function(){go(i+1)};
+document.addEventListener('keydown',function(e){if(e.key=='ArrowRight'||e.key==' '||e.key=='PageDown')go(i+1);if(e.key=='ArrowLeft'||e.key=='PageUp')go(i-1)});
+go(0);
+</script></body></html>
